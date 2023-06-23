@@ -1,0 +1,36 @@
+version: '3.0'
+
+services:
+  webmonitor_backend:
+    container_name: webmonitor_backend
+    build: ./backend
+    command: python /webmonitor_backend/main.py
+    restart: unless-stopped
+    environment:
+      - TZ=Europe/Moscow
+    volumes:
+      - /opt/webmonitor/DB:/webmonitor_backend/DB
+      - /opt/webmonitor/config:/webmonitor_backend/config
+      - /etc/localtime:/etc/localtime:ro
+
+  webmonitor_frontend:
+    container_name: webmonitor_frontend
+    build: ./frontend
+#    command: python /webmonitor_frontend/manage.py runserver 0.0.0.0:8000
+    command: sh -c "python /webmonitor_frontend/manage.py makemigrations
+             && python /webmonitor_frontend/manage.py makemigrations monitor
+             && python /webmonitor_frontend/manage.py migrate
+             && python /webmonitor_frontend/manage.py migrate --database=monitor_db
+             && python /webmonitor_frontend/manage.py runserver 0.0.0.0:8000"
+    
+    restart: unless-stopped
+    environment:
+      - TZ=Europe/Moscow
+    volumes:
+#      - /opt/webmonitor:/webmonitor_frontend
+      - /opt/webmonitor/DB:/webmonitor_frontend/DB
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - 8008:8000
+#    depends_on:
+#      - webmonitor_backend

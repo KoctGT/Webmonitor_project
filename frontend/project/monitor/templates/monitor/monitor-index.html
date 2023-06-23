@@ -1,0 +1,198 @@
+{% extends 'monitor/base.html' %}
+{% load static %}
+{% block title %}
+Monitor Index
+{% endblock %}
+
+{% block body %}
+    <div class="page">
+        <!-- Header -->
+        <header class="header">
+            <div class="container">
+                <div class="header-inner">
+                    <div class="header-brand">
+                        Webmonitor Page
+                    </div>
+                    <div class="header-logo">
+                        <img src="{% static 'images/monitoring.gif' %}" alt="" width="100" height="40">
+                    </div>
+                    <nav class="header-nav">
+                        <a class="header-nav-link active" href="http://192.168.1.203:8000/monitor/">Webmonitor</a>
+                        <a class="header-nav-link" href="#">Link2</a>
+                        <a class="header-nav-link" href="#">Link3</a>
+                    </nav>
+                </div>
+            </div><!-- /.container -->
+        </header>
+        
+        <!-- Main -->
+        <div class="container">
+            <main class="content">
+                <hr>
+                <div class="content-header">
+                    <h1 class="title">Services</h1>
+                    {% if services_info_list %}
+                    <div>
+                        <h2 class="subtitle">Service availability table:</h2>
+                        <table>
+                            <tr>
+                                <th><b> Service name </b></th>
+                                <th><b> URL </b></th>
+                                <th><b> Check time </b></th>
+                                <th><b> Status </b></th>
+                            </tr>
+                        {% for service, record in services_info_list %}
+                            {% if record.availability == True %}
+                            <tr style="background-color:#a3ff0070;">
+                            {% else %}
+                            <tr style="background-color:#ff180070;">
+                            {% endif %}
+                                <td>{{ service.service_name }} (id: {{ service.id }})</td>
+                                <td>{{ service.protocol }}://{{ service.host }}:{{ service.port }}{{ service.path }}</td>
+                                {% if not record.check_time %}
+                                <td>--- no data! ---</td>
+                                <td>--- no data! ---</td>
+                                {% else %}
+                                <td>{{ record.check_time }}</td>
+                                <td>{{ record.availability }}</td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                        </table>
+                    </div>
+                    {% else %}
+                    <h2 class="subtitle">No Services</h3>
+                    {% endif %}
+                    <hr>
+                </div>
+
+                <div>
+                    <h1 class="title">Systems</h1>
+                    {% if systems_info_list %}
+                    <div>
+                        <h2 class="subtitle">Event logs table:</h2>
+                        <table>
+                            <tr>
+                                <th><b> System name </b></th>
+                                <th><b> Hostname </b></th>
+                                <th><b> Event time </b></th>
+                                <th><b> Message </b></th>
+                            </tr>
+                        {% for system, record in systems_info_list %}
+                            {% if record.message %}
+                            <tr style="background-color:#ff180070;">
+                            {% else %}
+                            <tr style="background-color:#a3ff0070;">
+                            {% endif %}
+                                <td>{{ system.system_name }} (id: {{ system.id }})</td>
+                                <td>{{ system.hostname }}</td>
+                                {% if not record.message %}
+                                <td>---</td>
+                                <td>no errors</td>
+                                {% else %}
+                                <td>{{ record.realtime_timestamp }}</td>
+                                <td>{{ record.message }}</td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                        </table>
+                    </div>
+            
+                    <div>
+                        <br>
+                        <h2 class="subtitle">System metrics table:</h2>
+                        <table>
+                            <tr>
+                                <th><b> System name </b></th>
+                                <th><b> Hostname </b></th>
+                                <th><b> Check time </b></th>
+                                <th><b> Uptime </b></th>
+                                <th><b> CPU load 1 min</b></th>
+                                <th><b> CPU load 5 min</b></th>
+                                <th><b> CPU load 15 min</b></th>
+                                <th><b> Memory used, Mb / Total RAM, Mb)</b></th>
+                                <th><b> Disk usage, %</b></th>
+                            </tr>
+                        {% for system, record in systems_metrics_list %}
+                            {% if not record.check_time %}
+                            <tr style="background-color:#ff180070;">
+                            {% else %}
+                            <tr style="background-color:#a3ff0070;">
+                            {% endif %}
+                                <td>{{ system.system_name }} (id: {{ system.id }})</td>
+                                <td>{{ system.hostname }}</td>
+                                {% if not record.check_time %}
+                                <td>---</td>
+                                <td>---</td>
+                                <td>---</td>
+                                <td>---</td>
+                                <td>---</td>
+                                <td>---</td>
+                                <td>---no data!---</td>
+                                {% else %}
+                                <td>{{ record.check_time }}</td>
+                                <td>{{ record.uptime }}</td>
+                                <td>{{ record.cpu_load_1 }}</td>
+                                <td>{{ record.cpu_load_5 }}</td>
+                                <td>{{ record.cpu_load_15 }}</td>
+                                <td>{{ record.mem_used }} / {{ system.RAM }}</td>
+                                <td>{{ record.disk_usage }}</td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                        </table>
+                    </div>
+                    {% else %}
+                    <h2 class="title">No Systems</h2>
+                    {% endif %}
+                    <hr>
+                </div>
+
+            <div>
+                <h1 class="title">Internet check</h1>
+                {% if iservices_info_list %}
+                <div>
+                    <h2 class="subtitle">Internet availability table:</h2>
+                    <table>
+                        <tr>
+                            <th><b> Service name </b></th>
+                            <th><b> Destination </b></th>
+                            <th><b> Check time </b></th>
+                            <th><b> Packet loss rate %</b></th>
+                            <th><b> RTT MIN</b></th>
+                            <th><b> RTT MAX</b></th>
+                            <th><b> Availability </b></th>
+                        </tr>
+                    {% for iservices, record in iservices_info_list %}
+                        {% if record.availability %}
+                        <tr style="background-color:#a3ff0070;">
+                        {% else %}
+                        <tr style="background-color:#ff180070;">
+                        {% endif %}
+                            <td>{{ iservices.service_name }} (id: {{ iservices.id }})</td>
+                            <td>{{ iservices.IPv4 }}</td>
+                            {% if not record.check_time %}
+                            <td>---</td>
+                            <td>---</td>
+                            <td>---</td>
+                            <td>---</td>
+                            <td>--- no data! ---</td>
+                            {% else %}
+                            <td>{{ record.check_time }}</td>
+                            <td>{{ record.packet_loss_rate }}</td>
+                            <td>{{ record.rtt_min }}</td>
+                            <td>{{ record.rtt_max }}</td>
+                            <td>{{ record.availability }}</td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                    </table>
+                </div>
+                {% else %}
+                <h2 class="subtitle">No Internet services</h2>
+                {% endif %}
+                <hr>
+            </div>
+
+    </div>
+{% endblock %}
