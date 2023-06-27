@@ -1,5 +1,7 @@
 import asyncio
+import argparse
 import datetime
+import yaml
 import os
 import re
 import time
@@ -10,23 +12,20 @@ from send_cmd_to_systems import send_commands_to_devices
 from service_check import check_web_service
 
 
-WORK_DIR = r"/webmonitor_backend"
-DB_PATH = WORK_DIR + r"/DB/monitor_db.sqlite3"
-SYSTEMS_FILE = WORK_DIR + r"/config/systems.yaml"
-SERVICES_FILE = WORK_DIR + r"/config/services.yaml"
-INTERNET_SERVICES_FILE = WORK_DIR + r"/config/internet_services.yaml"
-CHECK_INTERVAL_INTERNET = 5
-CHECK_INTERVAL_SERVICES = 15
-CHECK_INTERVAL_METRICS = 25
-CHECK_INTERVAL_JOURNALS = 35 # 6 hours = 21600 sec
+parser = argparse.ArgumentParser(description="Webmonitor backend")
+parser.add_argument("-ci", dest="check_interval_internet", default=0, type=int)
+parser.add_argument("-cs", dest="check_interval_services", default=0, type=int)
+parser.add_argument("-cm", dest="check_interval_metrics", default=0, type=int)
+parser.add_argument("-cj", dest="check_interval_journals", default=0, type=int)
+args = parser.parse_args()
 
 
-def main(iservices_all_list,
-         iservices_active_IPs, 
-         systems_all_list, 
-         active_systems_list_of_dicts,
-         services_result_list, 
-         db, 
+def main(iservices_all_list, 
+        iservices_active_IPs, 
+        systems_all_list, 
+        active_systems_list_of_dicts,
+        services_result_list, 
+        db, 
         check_interval_internet=30,
         check_interval_serivces=30,
         check_interval_metrics=30,
@@ -258,9 +257,9 @@ async def get_system_journal(active_systems_list_of_dicts,
                         )
         await asyncio.sleep(check_interval)
 
-def check_config_files():
-    if not os.path.exists(SYSTEMS_FILE):
-        with open(SYSTEMS_FILE, 'w') as f:
+def check_config_files(systems_file, services_file, internet_services_file):
+    if not os.path.exists(systems_file):
+        with open(systems_file, 'w') as f:
             f.write('''- system_name: OPIZ2
   device_type: linux
   host: 192.168.1.203
@@ -277,8 +276,8 @@ def check_config_files():
   enabled: 1
 '''
             )
-    if not os.path.exists(SERVICES_FILE):
-        with open(SERVICES_FILE, 'w') as f:
+    if not os.path.exists(services_file):
+        with open(services_file, 'w') as f:
             f.write('''- service_name: Home Assistant
   protocol: http
   host: 192.168.1.201
@@ -320,8 +319,8 @@ def check_config_files():
   correct_http_response: <title>Lorem Ipsum - All the facts - Lipsum generator</title>
   enabled: 1'''
             )
-    if not os.path.exists(INTERNET_SERVICES_FILE):
-        with open(INTERNET_SERVICES_FILE, 'w') as f:
+    if not os.path.exists(internet_services_file):
+        with open(internet_services_file, 'w') as f:
             f.write('''- service_name: google_dns
   IPv4: 8.8.8.8
   enabled: 1
@@ -336,14 +335,61 @@ def check_config_files():
   enabled: 0'''
             )
 
+def load_main_settings(check_interval_internet=0,
+                       check_interval_services=0,
+                       check_interval_metrics=0,
+                       check_interval_journals=0
+                       ):
+    settings_file_exist = os.path.exists(r"/webmonitor_backend/config/settings.yaml")
+    if settings_file_exist:
+        with open(r'/webmonitor_backend/config/settings.yaml', 'r') as f:
+            settings_dict = yaml.safe_load(f)
+    else:
+        print("Warning! File 'settings.yaml' not found! Will be used default settings.")
+        settings = '''WORK_DIR: /webmonitor_backend
+DB_PATH: /webmonitor_backend/DB/monitor_db.sqlite3
+SYSTEMS_FILE: /webmonitor_backend/config/systems.yaml
+SERVICES_FILE: /webmonitor_backend/config/services.yaml
+INTERNET_SERVICES_FILE: /webmonitor_backend/config/internet_services.yaml
+CHECK_INTERVAL_INTERNET: 5
+CHECK_INTERVAL_SERVICES: 15
+CHECK_INTERVAL_METRICS: 25
+CHECK_INTERVAL_JOURNALS: 35'''
+        with open(r'/webmonitor_backend/config/settings.yaml', 'w') as f:
+            f.write(settings)
+        with open(r'/webmonitor_backend/config/settings.yaml', 'r') as f:
+            settings_dict = yaml.safe_load(f)
+
+    if check_interval_internet:
+        settings_dict['CHECK_INTERVAL_INTERNET'] = check_interval_internet
+    elif check_interval_services:
+        settings_dict['CHECK_INTERVAL_SERVICES'] = check_interval_services
+    elif check_interval_metrics:
+        settings_dict['CHECK_INTERVAL_METRICS'] = check_interval_metrics
+    elif check_interval_journals:
+        settings_dict['CHECK_INTERVAL_JOURNALS'] = check_interval_journals
+    
+    return settings_dict
+
+
 if __name__ == "__main__":
+    # Load main config
+    settings_dict = load_main_settings(check_interval_internet=args.check_interval_internet,
+                                       check_interval_services=args.check_interval_services,
+                                       check_interval_metrics=args.check_interval_metrics,
+                                       check_interval_journals=args.check_interval_journals
+                                       )
+    
     # Check config files
-    check_config_files()
+    check_config_files(systems_file=settings_dict['SYSTEMS_FILE'],
+                       services_file=settings_dict['SERVICES_FILE'],
+                       internet_services_file=settings_dict['INTERNET_SERVICES_FILE'],
+    )
 
     # Check DB exist
     while True:
         time.sleep(5) # Waiting for the database to be created by the frontend
-        db_exists = os.path.exists(DB_PATH)
+        db_exists = os.path.exists(settings_dict['DB_PATH'])
         if db_exists:
             break
         else:
@@ -351,22 +397,22 @@ if __name__ == "__main__":
     
     # Initialization
     iservices_all_list, iservices_active_IPs, systems_actual_list, active_systems_list_of_dicts, services_result_list = initialization(
-    db_path=DB_PATH,
-    internet_services_file=INTERNET_SERVICES_FILE,
-    systems_file=SYSTEMS_FILE,
-    services_file=SERVICES_FILE,
+    db_path=settings_dict['DB_PATH'],
+    internet_services_file=settings_dict['INTERNET_SERVICES_FILE'],
+    systems_file=settings_dict['SYSTEMS_FILE'],
+    services_file=settings_dict['SERVICES_FILE'],
     force_init=False
-    ) 
+    )
 
     # Start main process
     main(iservices_all_list=iservices_all_list, 
-            iservices_active_IPs=iservices_active_IPs,
-            systems_all_list=systems_actual_list,
-            active_systems_list_of_dicts=active_systems_list_of_dicts,
-            services_result_list=services_result_list,
-            check_interval_internet=CHECK_INTERVAL_INTERNET,
-            check_interval_serivces=CHECK_INTERVAL_SERVICES,
-            check_interval_metrics=CHECK_INTERVAL_METRICS,
-            check_interval_journals=CHECK_INTERVAL_JOURNALS,
-            db=DB_PATH
-            )
+         iservices_active_IPs=iservices_active_IPs, 
+         systems_all_list=systems_actual_list,
+         active_systems_list_of_dicts=active_systems_list_of_dicts,
+         services_result_list=services_result_list,
+         check_interval_internet=settings_dict['CHECK_INTERVAL_INTERNET'],
+         check_interval_serivces=settings_dict['CHECK_INTERVAL_SERVICES'],
+         check_interval_metrics=settings_dict['CHECK_INTERVAL_METRICS'],
+         check_interval_journals=settings_dict['CHECK_INTERVAL_JOURNALS'],
+         db=settings_dict['DB_PATH']
+        )

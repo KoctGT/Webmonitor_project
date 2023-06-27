@@ -139,7 +139,7 @@ def _sync_systems_with_DB(db, systems_file, force_init):
                 prepared_dict=False, 
                 limit=len(HDD_upd_list),
                 command='df -h',
-                regex=re.compile(r'.+(?P<hdd_dev>\/dev\/\w+)\s+(?P<size>\d+\w)\s+(?P<used>\d+\w)\s+(?P<avail>\d+\w)\s+(?P<use_percent>\d+%)\s\/', re.MULTILINE)
+                regex=re.compile(r'.+(?P<hdd_dev>\/dev\/\w+)\s+(?P<size>\d+\.?\d+\w)\s+(?P<used>\d+\.?\d+\w)\s+(?P<avail>\d+\.?\d+\w)\s+(?P<use_percent>\d+\.?\d+%)\s\/', re.MULTILINE)
                 )
             # print("\n\nresult_hdd= ", result_hdd)
 
