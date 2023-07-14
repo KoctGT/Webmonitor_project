@@ -1,0 +1,40 @@
+- service_name: Home Assistant
+  protocol: http
+  host: 192.168.1.201
+  port: 8123
+  path: ''
+  correct_http_response_code: 200
+  correct_http_response: <title>Home Assistant</title>
+  enabled: 1
+- service_name: Pi-hole
+  protocol: http
+  host: 192.168.1.201
+  port: 80
+  path: /admin/
+  correct_http_response_code: 200
+  correct_http_response: <title>Pi-hole - orangepizero2</title>
+  enabled: 0
+- service_name: Zigbee2MQTT
+  protocol: http
+  host: 192.168.1.201
+  port: 8080
+  path: ''
+  correct_http_response_code: 200
+  correct_http_response: <title>Zigbee2MQTT</title>
+  enabled: 0
+- service_name: mosquitto
+  protocol: http
+  host: 192.168.1.201
+  port: 1883
+  path: ''
+  correct_http_response_code: 200
+  correct_http_response: 
+  enabled: 0
+- service_name: lipsum.com
+  protocol: https
+  host: en.lipsum.com
+  port: 443
+  path: /feed/html
+  correct_http_response_code: 200
+  correct_http_response: <title>Lorem Ipsum - All the facts - Lipsum generator</title>
+  enabled: 1

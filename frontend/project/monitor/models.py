@@ -23,6 +23,8 @@ class SystemsLogs(models.Model):
     hostname = models.CharField(max_length=40, null=True)
     code_func = models.CharField(max_length=255, null=True)
     cmdline = models.CharField(max_length=255, null=True)
+    ignored = models.BooleanField(default=False)
+    solved = models.BooleanField(default=False)
 
 class SystemsMetrics(models.Model):
     system = models.ForeignKey(Systems, on_delete=models.PROTECT)

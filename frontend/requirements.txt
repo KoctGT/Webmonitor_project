@@ -1,1 +1,2 @@
 Django >= 3.2.15
+django_chartjs >= 2.3.0

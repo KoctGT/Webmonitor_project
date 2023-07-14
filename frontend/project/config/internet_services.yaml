@@ -1,0 +1,12 @@
+- service_name: google_dns
+  IPv4: 8.8.8.8
+  enabled: 1
+- service_name: yandex_dns
+  IPv4: 77.88.8.8
+  enabled: 1
+- service_name: not_found_srv
+  IPv4: 192.168.1.249
+  enabled: 1
+- service_name: new_test_srv2
+  IPv4: 169.172.127.10
+  enabled: 0

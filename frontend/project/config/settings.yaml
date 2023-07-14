@@ -1,0 +1,9 @@
+WORK_DIR: /webmonitor_backend
+DB_PATH: /webmonitor_backend/DB/monitor_db.sqlite3
+SYSTEMS_FILE: /webmonitor_backend/config/systems.yaml
+SERVICES_FILE: /webmonitor_backend/config/services.yaml
+INTERNET_SERVICES_FILE: /webmonitor_backend/config/internet_services.yaml
+CHECK_INTERVAL_INTERNET: 5
+CHECK_INTERVAL_SERVICES: 15
+CHECK_INTERVAL_METRICS: 25
+CHECK_INTERVAL_JOURNALS: 35

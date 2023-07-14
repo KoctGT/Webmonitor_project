@@ -1,0 +1,14 @@
+- system_name: OPIZ2
+  device_type: linux
+  host: 192.168.1.203
+  username: python
+  key_file: /ssh_key/id_rsa
+  timeout: 5
+  enabled: 1
+- system_name: Debian_PyNeng
+  device_type: linux
+  host: 192.168.1.203
+  username: python
+  key_file: /ssh_key/id_rsa
+  timeout: 5
+  enabled: 1

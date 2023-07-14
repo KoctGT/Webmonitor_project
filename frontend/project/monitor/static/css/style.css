@@ -116,14 +116,28 @@ p {
 .content {
   height: 100%;
   width: 100%;
+  text-align: center;
 }
 
-.content-header {
+.content-block {
   margin-bottom: 10px;
 }
 
+.content-subblock {
+  margin-bottom: 10px;
+  white-space:nowrap;
+  overflow:auto;
+  margin: auto;
+
+}
+
+.content-subblock div {
+  display:inline-block;
+  margin: auto;
+}
+
 .subtitle {
-  margin-bottom: 0px;
+  margin-bottom: 5px;
   margin-top: 0px;
   font-size: 1rem;
   color: rgb(0, 0, 0);
@@ -166,6 +180,11 @@ th {
   background-color:beige;
 }
 
+/* canvas{
+  height:250px !important;
+width:300px !important;
+
+}*/
 /* Footer
 ====================*/
 .footer {

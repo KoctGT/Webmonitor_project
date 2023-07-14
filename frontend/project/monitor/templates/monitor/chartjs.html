@@ -1,0 +1,115 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<script src="{% static 'scripts\chart.js' %}"></script>
+<body>
+{% for i in datapoints %}
+<canvas id="myChart{{ forloop.counter0 }}" style="width:100%;max-width:600px;"></canvas>
+{% endfor %}
+<!--<canvas id="myChart0" style="width:100%;max-width:600px"></canvas>-->
+<!--<canvas id="myChart1" style="width:100%;max-width:600px"></canvas>-->
+
+<script>
+    Chart.defaults.global.legend.labels.usePointStyle = true;
+    var data = {{ datapoints|safe }};
+    var dataPoints = [];
+    var datax = [];
+    var datay = [];
+    var sys_name = '';
+    var yAxes_max = '';
+    var color_list = ['#0519f3', '#008FFD', '#0645ef', '#0090d0', '#2e7fa3', '#535edd', '#8e78da'];
+//    <!--var borderColor = ['#008FFD21', '#0519f321', '#0645ef21', '#0090d021', '#2e7fa321', '#535edd21', '#8e78da21'];-->
+
+
+//    console.log(data);
+
+    for(var i=0; i<data.length; i++) {
+        datax = [];
+        datay = [];
+        sys_name = data[i][0]['fields']['system_name'];
+        yAxes_max = parseInt(data[i][0]['fields']['RAM']);
+
+        if (i<=color_list.length){
+            backgroundColor_value = color_list[i] + '21';
+            borderColor_value = color_list[i];
+        } else {
+            backgroundColor_value = '#0519f321';
+            borderColor_value = '#0519f3';
+        }
+       
+//        console.log(sys_name);
+//        console.log(yAxes_max);
+        
+        for(var j=0; j<data[i].length; j++) {
+        //    console.log(Object.keys(dataPoints[i][j]));
+            datax.push(data[i][j]['fields']['check_time']);
+            datay.push(parseInt(data[i][j]['fields']['mem_used']));
+        }
+
+//        console.log(datax, datay);
+
+        new Chart("myChart" + i, {
+                type: "line",
+                data: {
+                    labels: datax,
+                    datasets: [{
+                    label: sys_name,
+                    fill: true,
+                    lineTension: 0,
+                    backgroundColor: backgroundColor_value,
+                    borderColor: borderColor_value,
+                    data: datay
+                    }]
+                },
+                options: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            fontColor: 'black',
+                            fontFamily: 'Calibri Light',
+                            fontStyle: 'italic'
+                        },
+                    },                
+                    hover: {
+                        mode: 'label',
+                        intersect: true
+                    },
+                    tooltips: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    responsive: false,
+
+                    title: {
+                        display: true,
+                        text: 'Memory usage for ' + sys_name + ' (RAM: ' + yAxes_max + 'Mb)',
+                        position: 'top',
+                        },
+                    scales: {
+                        yAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Used, Mb'
+                        },
+                        ticks: {
+                                stepSize: Math.round(yAxes_max / 1000) * 100 * 2,
+                                min: 0,
+                                max: yAxes_max,
+                            }
+                        }],
+                        xAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Check time',
+                            type: 'time'
+                        }
+                        }]
+                    },
+                }     
+                });
+    }
+
+</script>
+
+</body>
+</html>
