@@ -152,3 +152,4 @@ cython_debug/
 #.idea/
 backend/ssh_key/id_rsa
 backend/ssh_key/id_rsa.pub
+backend/ssh_key/id_rsa.pub
