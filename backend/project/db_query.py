@@ -27,9 +27,9 @@ def add_data_in_table(db, data, table):
         data=data,
         keys_list=param_string.split(",")
         )
-    # print("insert_value_list= ", insert_value_list)
+    # print("\ninsert_value_list= ", insert_value_list, "\n")
     query_insert = f"INSERT INTO {table} ({param_string}) values ({blank})"
-    # print("query_icmp = ", query_icmp)
+    # print("\nquery_insert = ", query_insert, '\n')
     add_or_update_data(db, query_insert, insert_value_list)
 
 def update_data_in_table(db, data, table, condition):
@@ -54,7 +54,7 @@ def add_or_update_data(db, query, data=None):
                 with connection:
                     connection.execute(query, row)
             except sqlite3.IntegrityError as err:
-                # print("При добавлении данных:", row, "Возникла ошибка:", err)
+                print("При добавлении данных:", row, "Возникла ошибка:", err)
                 pass
     else:
         try:

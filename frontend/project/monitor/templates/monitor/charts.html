@@ -1,0 +1,335 @@
+{% extends 'monitor/base.html' %}
+{% load static %}
+{% block head %}
+<script src="{% static 'scripts\chart.js' %}"></script>
+
+
+{% endblock %}
+{% block title %}
+Monitor Index
+{% endblock %}
+
+{% block body %}
+<div class="page">
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-inner">
+                <div class="header-brand">
+                    Webmonitor Page
+                </div>
+                <div class="header-logo">
+                    <img src="{% static 'images/monitoring.gif' %}" alt="" width="100" height="40">
+                </div>
+                <nav class="header-nav">
+                    <a class="header-nav-link" href="http://192.168.1.203:8008/monitor/">Webmonitor</a>
+                    <a class="header-nav-link active" href="http://192.168.1.203:8008/monitor/charts">Charts</a>
+                </nav>
+            </div>
+        </div><!-- /.container -->
+    </header>
+    
+    <!-- Main -->
+    <div class="container">
+        <main class="content">
+            <hr>
+            <div class="content-block">
+                <h1 class="title">Internet check</h1>
+                {% if iservices_info_list %}
+                <div>
+                    <h3 class="subtitleh3">Internet availability table:</h2>
+                    <table>
+                        <tr>
+                            <th><b> Service name </b></th>
+                            <th><b> Destination </b></th>
+                            <th><b> Check time </b></th>
+                            <th><b> Packet loss rate %</b></th>
+                            <th><b> RTT MIN</b></th>
+                            <th><b> RTT MAX</b></th>
+                            <th style="width:80%"><b> Availability </b></th>
+                        </tr>
+                    {% for iservices, record in iservices_info_list %}
+                        {% if record.availability %}
+                        <tr style="background-color:#a3ff0070;">
+                        {% else %}
+                        <tr style="background-color:#ff180070;">
+                        {% endif %}
+                            <td>{{ iservices.service_name }} (id: {{ iservices.id }})</td>
+                            <td>{{ iservices.IPv4 }}</td>
+                            {% if not record.check_time %}
+                            <td>---</td>
+                            <td>---</td>
+                            <td>---</td>
+                            <td>---</td>
+                            <td>--- no data! ---</td>
+                            {% else %}
+                            <td>{{ record.check_time }}</td>
+                            <td>{{ record.packet_loss_rate }}</td>
+                            <td>{{ record.rtt_min }}</td>
+                            <td>{{ record.rtt_max }}</td>
+                            <td>{{ record.availability }}</td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                    </table>
+                </div>
+                {% else %}
+                <h2 class="subtitle">No Internet services</h2>
+                {% endif %}
+                <hr>
+            </div>
+
+            <div class="content-block">
+                <h1 class="title">Service check</h1>
+                {% if services_info_list %}
+                <div>
+                    <h3 class="subtitleh3">Service availability table:</h2>
+                    <table>
+                        <tr>
+                            <th style="width:65%"><b> Service name </b></th>
+                            <th><b> URL </b></th>
+                            <th style="width:65%"><b> Check time </b></th>
+                            <th style="width:25%"><b> Status </b></th>
+                        </tr>
+                    {% for service, record in services_info_list %}
+                        {% if record.availability == True %}
+                        <tr style="background-color:#a3ff0070;">
+                        {% else %}
+                        <tr style="background-color:#ff180070;">
+                        {% endif %}
+                            <td>{{ service.service_name }} (id: {{ service.id }})</td>
+                            <td>{{ service.protocol }}://{{ service.host }}:{{ service.port }}{{ service.path }}</td>
+                            {% if not record.check_time %}
+                            <td>--- no data! ---</td>
+                            <td>--- no data! ---</td>
+                            {% else %}
+                            <td>{{ record.check_time }}</td>
+                            <td>{{ record.availability }}</td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                    </table>
+                </div>
+                {% else %}
+                <h2 class="subtitle">No Services</h3>
+                {% endif %}
+                <hr>
+            </div>
+
+            <div class="content-block">
+                <h1 class="title">Systems info</h1>
+                {% if systems_info_list %}
+                <div>
+                    <h2 class="subtitle">System metrics charts</h2>
+                    <h3 class="subtitleh3">Memory usage:</h2>
+                    <br>
+                    <div class="content-subblock">
+                        {% for i in datapoints %}
+                        <div>
+                        <canvas id="myChart{{ forloop.counter0 }}" style="max-width:600px;min-width: 450px;"></canvas>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <br>
+                    <h3 class="subtitleh3">System metrics table:</h2>
+                    <table>
+                        <tr>
+                            <th><b> System name </b></th>
+                            <th><b> Hostname </b></th>
+                            <th><b> Check time </b></th>
+                            <th><b> Uptime </b></th>
+                            <th><b> CPU load 1 min</b></th>
+                            <th><b> CPU load 5 min</b></th>
+                            <th><b> CPU load 15 min</b></th>
+                            <th><b> Memory used, Mb / Total RAM, Mb)</b></th>
+                            <th><b> Disk usage, %</b></th>
+                        </tr>
+                    {% for system, record in systems_metrics_list %}
+                        {% if not record.check_time %}
+                        <tr style="background-color:#ff180070;">
+                        {% else %}
+                        <tr style="background-color:#a3ff0070;">
+                        {% endif %}
+                            <td>{{ system.system_name }} (id: {{ system.id }})</td>
+                            <td>{{ system.hostname }}</td>
+                            {% if not record.check_time %}
+                            <td>---</td>
+                            <td>---</td>
+                            <td>---</td>
+                            <td>---</td>
+                            <td>---</td>
+                            <td>---</td>
+                            <td>---no data!---</td>
+                            {% else %}
+                            <td>{{ record.check_time }}</td>
+                            <td>{{ record.uptime }}</td>
+                            <td>{{ record.cpu_load_1 }}</td>
+                            <td>{{ record.cpu_load_5 }}</td>
+                            <td>{{ record.cpu_load_15 }}</td>
+                            <td>{{ record.mem_used }} / {{ system.RAM }}</td>
+                            <td>{{ record.disk_usage }}</td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                    </table>
+                </div>                
+                <br>
+                <div>
+                    <h2 class="subtitle">Event logs</h2>
+                    <h3 class="subtitleh3">Event logs table:</h2>
+                    <table>
+                        <tr>
+                            <th><b> System name </b></th>
+                            <th><b> Hostname </b></th>
+                            <th><b> Event time </b></th>
+                            <th style="width:300%"><b> Message </b></th>
+                            <th><b> Available actions </b></th>
+                        </tr>
+                    {% for system, record in systems_info_list %}
+                        {% if record.ignored or record.solved %}
+                            <tr style="background-color:#a3ff0070;">
+                        {% elif record.message %}
+                        <tr style="background-color:#ff180070;">
+                        {% else %}
+                        <tr style="background-color:#a3ff0070;">
+                        {% endif %}
+                            <td>{{ system.system_name }} (id: {{ system.id }})</td>
+                            <td>{{ system.hostname }}</td>
+                            {% if not record.message or record.ignored or record.solved %}
+                            <td>---</td>
+                            <td>no errors</td>
+                            <td>no action available</td>
+                            {% else %}
+                            <td>{{ record.realtime_timestamp }}</td>
+                            <td>{{ record.message }}</td>
+                            <td> <a href="solve/{{ record.id }}">Mark as solved</a><br /> or <br /><a href="ignore/{{ record.id }}">Mark as ignored</a></td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                    </table>
+                </div>
+        
+
+                {% else %}
+                <h2 class="subtitle">No Systems</h2>
+                {% endif %}
+                <hr>
+            </div>
+
+
+
+
+</div>
+<script>
+    Chart.defaults.global.legend.labels.usePointStyle = true;
+    var data = {{ datapoints|safe }};
+    var dataPoints = [];
+    var datax = [];
+    var datay = [];
+    var sys_name = '';
+    var yAxes_max = '';
+    var color_list = ['#0519f3', '#008FFD', '#0645ef', '#0090d0', '#2e7fa3', '#535edd', '#8e78da'];
+//    <!--var borderColor = ['#008FFD21', '#0519f321', '#0645ef21', '#0090d021', '#2e7fa321', '#535edd21', '#8e78da21'];-->
+
+
+//    console.log(data);
+
+    for(var i=0; i<data.length; i++) {
+        datax = [];
+        datay = [];
+        sys_name = data[i][0]['fields']['system_name'];
+        yAxes_max = parseInt(data[i][0]['fields']['RAM']);
+
+        if (i<=color_list.length){
+            backgroundColor_value = color_list[i] + '21';
+            borderColor_value = color_list[i];
+        } else {
+            backgroundColor_value = '#0519f321';
+            borderColor_value = '#0519f3';
+        }
+        
+//        console.log(sys_name);
+//        console.log(yAxes_max);
+        
+        for(var j=0; j<data[i].length; j++) {
+        //    console.log(Object.keys(dataPoints[i][j]));
+            datax.push(data[i][j]['fields']['check_time']);
+            datay.push(parseInt(data[i][j]['fields']['mem_used']));
+        }
+
+//        console.log(datax, datay);
+
+        new Chart("myChart" + i, {
+                type: "line",
+                data: {
+                    labels: datax,
+                    datasets: [{
+                        label: sys_name,
+                        fill: true,
+                        //lineTension: 0,
+                        backgroundColor: backgroundColor_value,
+                        borderColor: borderColor_value,
+                        data: datay
+                    }]
+                },
+                options: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            fontColor: 'black',
+                            fontFamily: 'Calibri Light',
+                            fontStyle: 'italic'
+                        },
+                    },                
+                    hover: {
+                        mode: 'label',
+                        intersect: true
+                    },
+                    tooltips: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    responsive: false,
+                    maintainAspectRatio: true,
+
+                    title: {
+                        display: true,
+                        text: 'Memory usage for ' + sys_name + ' (RAM: ' + yAxes_max + 'Mb)',
+                        position: 'top',
+                        fontSize: 11
+                        },
+                    scales: {
+                        yAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Used, Mb'
+                        },
+                        ticks: {
+                                //stepSize: Math.round(yAxes_max / 1000) * 100 * 2,
+                                min: 0,
+                                max: Math.round(yAxes_max / 1000) * 1000,
+                                autoSkip: true,
+                                maxTicksLimit: 6,
+                                beginAtZero:true,
+                                fontSize: 9
+                            }
+                        }],
+                        xAxes: [{
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Check time',
+                                //type: 'time',
+                            },
+                            ticks: {
+                                autoSkip: true,
+                                maxTicksLimit: 6,
+                                fontSize: 9
+                            }
+                        }],
+                    },
+                }     
+                });
+    }
+
+</script>
+{% endblock %}

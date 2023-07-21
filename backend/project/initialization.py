@@ -57,6 +57,7 @@ def _sync_iservices_with_DB(db, internet_services_file):
 def _sync_systems_with_DB(db, systems_file, force_init):
     with open(systems_file) as f:
         systems_list_f = yaml.safe_load(f)
+    # print('\nsystems_list_f= ', systems_list_f)    
     db_query.sync_db_records(db=db,
                              data=systems_list_f,
                              table='monitor_systems',
@@ -142,7 +143,23 @@ def _sync_systems_with_DB(db, systems_file, force_init):
                 regex=re.compile(r'.+(?P<hdd_dev>\/dev\/\w+)\s+(?P<size>\d+\.?\d+\w)\s+(?P<used>\d+\.?\d+\w)\s+(?P<avail>\d+\.?\d+\w)\s+(?P<use_percent>\d+\.?\d+%)\s\/', re.MULTILINE)
                 )
             # print("\n\nresult_hdd= ", result_hdd)
-
+        if not force_init:
+            cpucores_upd_list = []
+            for row in active_systems_list_of_dicts:
+                if 'CPU_cores' in row.get('empty_fields'):
+                    cpucores_upd_list.append(row)
+        else:
+            cpucores_upd_list = active_systems_list_of_dicts
+        # print("hostname_upd_list = ", hostname_upd_list)
+        if cpucores_upd_list:
+            result_cpucores = send_commands_to_devices(
+                devices=cpucores_upd_list,
+                prepared_dict=False, 
+                limit=len(cpucores_upd_list),
+                command='nproc',
+                regex=re.compile(r'(?P<CPU_cores>\S+)')
+                )
+        # print("\nresult_cpucores = ", result_cpucores, "\n")
         if lsb_upd_list:
             # print('\n========Hint to lsb if=========\n')
             for i in range(len(result_lsb_release)):
@@ -173,7 +190,15 @@ def _sync_systems_with_DB(db, systems_file, force_init):
                     if result_hdd[i] and result_hdd[i].get('system_name') == active_systems_list_of_dicts[j]['system_name']:
                         # print('Hint to HDD for/n')
                         active_systems_list_of_dicts[j]['HDD'] = result_hdd[i].get('size', None)
-        
+
+        if cpucores_upd_list:
+            # print('\n========Hint to CPU cores if=========\n')
+            for i in range(len(result_cpucores)):
+                for j in range(len(active_systems_list_of_dicts)):
+                    if result_cpucores[i] and result_cpucores[i].get('system_name') == active_systems_list_of_dicts[j]['system_name']:
+                        # print('Hint to CPU cores for/n')
+                        active_systems_list_of_dicts[j]['CPU_cores'] = result_cpucores[i].get('CPU_cores', None)
+
         for i in range(len(active_systems_list_of_dicts)):
             active_systems_list_of_dicts[i].pop('empty_fields')
 

@@ -29,7 +29,7 @@ def send_commands_to_devices(devices, *,
         futures = [executor.submit(send_command, device, command) for device in devices_for_netmiko]
         for i, future in enumerate(futures):
             # with open('top_results', 'a') as f:
-            #     f.write(" ".join(future.result()[:result_length].splitlines()))
+            #    f.write(" ".join(future.result()[:result_length].splitlines()))
             # print("future.result()= ", " ".join(future.result()[:result_length].splitlines()))
             try:
                 if cmd_type == 'journalctl':

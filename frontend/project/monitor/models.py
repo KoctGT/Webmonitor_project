@@ -6,6 +6,7 @@ class Systems(models.Model):
     os = models.CharField(max_length=50, null=True) # lsb_release -a \ cat /proc/version
     hostname = models.CharField(max_length=20, null=True) # hostname
     host = models.CharField(max_length=100, null=True)
+    CPU_cores = models.IntegerField(null=True, default=None)
     RAM = models.CharField(max_length=20, null=True) #  top
     HDD = models.CharField(max_length=20, null=True) # df -h
     username = models.CharField(max_length=20, null=True)
@@ -16,8 +17,8 @@ class Systems(models.Model):
 
 class SystemsLogs(models.Model):
     system = models.ForeignKey(Systems, on_delete=models.PROTECT) # orangePIOS/Win/notebook
-    priority = models.IntegerField(null=False, blank=True, default=None)
-    pid = models.IntegerField(null=False, blank=True, default=None)
+    priority = models.IntegerField(null=True, blank=True, default=None)
+    pid = models.IntegerField(null=True, blank=True, default=None)
     realtime_timestamp = models.IntegerField(null=False, blank=True, default=None)
     message = models.TextField(null=False, blank=True, default=None)
     hostname = models.CharField(max_length=40, null=True)

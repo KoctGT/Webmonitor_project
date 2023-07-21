@@ -22,9 +22,8 @@ Monitor Index
                     <img src="{% static 'images/monitoring.gif' %}" alt="" width="100" height="40">
                 </div>
                 <nav class="header-nav">
-                    <a class="header-nav-link active" href="http://192.168.1.203:8000/monitor/">Webmonitor</a>
-                    <a class="header-nav-link" href="#">Link2</a>
-                    <a class="header-nav-link" href="#">Link3</a>
+                    <a class="header-nav-link active" href="http://192.168.1.203:8008/monitor/">Webmonitor</a>
+                    <a class="header-nav-link" href="http://192.168.1.203:8008/monitor/charts">Charts</a>
                 </nav>
             </div>
         </div><!-- /.container -->
@@ -35,19 +34,28 @@ Monitor Index
         <main class="content">
             <hr>
             <div class="content-block">
-                <h1 class="title">Internet check</h1>
+                <h1 class="title">[ INTERNET MONITOR ]</h1>
                 {% if iservices_info_list %}
+                <h2 class="subtitle">Internet availability chart</h2>
+                    <div class="content-subblock">
+                        {% for i in datapoints_internet_check %}
+                        <div>
+                        <canvas id="Chart_internet_check_{{ forloop.counter0 }}" style="max-width:600px;min-width: 450px;"></canvas>
+                        </div>
+                        {% endfor %}
+                    </div>
+                <br>
                 <div>
-                    <h2 class="subtitle">Internet availability table:</h2>
+                    <h3 class="subtitleh3">Internet availability table (last check):</h3>
                     <table>
                         <tr>
-                            <th><b> Service name </b></th>
+                            <th style="width:110%"><b> Service name </b></th>
                             <th><b> Destination </b></th>
                             <th><b> Check time </b></th>
-                            <th><b> Packet loss rate %</b></th>
-                            <th><b> RTT MIN</b></th>
-                            <th><b> RTT MAX</b></th>
-                            <th style="width:80%"><b> Availability </b></th>
+                            <th><b> Packet loss rate, %</b></th>
+                            <th style="width:50%"><b> RTT MIN</b></th>
+                            <th style="width:50%"><b> RTT MAX</b></th>
+                            <th style="width:60%"><b> Availability </b></th>
                         </tr>
                     {% for iservices, record in iservices_info_list %}
                         {% if record.availability %}
@@ -81,15 +89,24 @@ Monitor Index
             </div>
 
             <div class="content-block">
-                <h1 class="title">Service check</h1>
+                <h1 class="title">[ SERVICE MONITOR ]</h1>
                 {% if services_info_list %}
+                <h2 class="subtitle">Service availability chart</h2>
+                <div class="content-subblock">
+                    {% for i in datapoints_service_check %}
+                    <div>
+                    <canvas id="Chart_service_check_{{ forloop.counter0 }}" style="max-width:600px;min-width: 450px;"></canvas>
+                    </div>
+                    {% endfor %}
+                </div>
+            <br>
                 <div>
-                    <h2 class="subtitle">Service availability table:</h2>
+                    <h3 class="subtitleh3">Service availability table:</h2>
                     <table>
                         <tr>
                             <th style="width:65%"><b> Service name </b></th>
                             <th><b> URL </b></th>
-                            <th style="width:65%"><b> Check time </b></th>
+                            <th style="width:45%"><b> Check time </b></th>
                             <th style="width:25%"><b> Status </b></th>
                         </tr>
                     {% for service, record in services_info_list %}
@@ -118,31 +135,50 @@ Monitor Index
             </div>
 
             <div class="content-block">
-                <h1 class="title">Systems info</h1>
+                <h1 class="title">[ SYSTEM MONITOR ]</h1>
                 {% if systems_info_list %}
                 <div>
-                    <h2 class="subtitle">System metrics charts:</h2>
+                    <h2 class="subtitle">System metrics charts</h2>
+                    <h3 class="subtitleh3">CPU load:</h3>
                     <br>
                     <div class="content-subblock">
-                        {% for i in datapoints %}
+                        {% for i in datapoints_metrics %}
                         <div>
-                        <canvas id="myChart{{ forloop.counter0 }}" style="max-width:600px;min-width: 450px;"></canvas>
+                        <canvas id="Chart_CPU_load_{{ forloop.counter0 }}" style="max-width:600px;min-width: 450px;"></canvas>
                         </div>
                         {% endfor %}
                     </div>
                     <br>
-                    <h2 class="subtitle">System metrics table:</h2>
+                    <h3 class="subtitleh3">Memory usage:</h3>
+                    <div class="content-subblock">
+                        {% for i in datapoints_metrics %}
+                        <div>
+                        <canvas id="Chart_Mem_usage_{{ forloop.counter0 }}" style="max-width:600px;min-width: 450px;"></canvas>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <br>
+                    <h3 class="subtitleh3">Disk usage:</h3>
+                        <div class="content-subblock">
+                            {% for i in datapoints_metrics %}
+                            <div>
+                            <canvas id="Chart_disk_usage_{{ forloop.counter0 }}" style="max-width:600px;min-width: 450px;"></canvas>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    <br>
+                    <h3 class="subtitleh3">System metrics table:</h3>
                     <table>
                         <tr>
-                            <th><b> System name </b></th>
-                            <th><b> Hostname </b></th>
-                            <th><b> Check time </b></th>
+                            <th style="width:110%"><b> System name </b></th>
+                            <th style="width:65%"><b> Hostname </b></th>
+                            <th style="width:60%"><b> Check time </b></th>
                             <th><b> Uptime </b></th>
-                            <th><b> CPU load 1 min</b></th>
-                            <th><b> CPU load 5 min</b></th>
-                            <th><b> CPU load 15 min</b></th>
-                            <th><b> Memory used, Mb / Total RAM, Mb)</b></th>
-                            <th><b> Disk usage, %</b></th>
+                            <th style="width:55%"><b> CPU load 1 min</b></th>
+                            <th style="width:55%"><b> CPU load 5 min</b></th>
+                            <th style="width:55%"><b> CPU load 15 min</b></th>
+                            <th><b> Memory used, Mb / Total RAM, Mb</b></th>
+                            <th style="width:75%"><b> Disk usage, %</b></th>
                         </tr>
                     {% for system, record in systems_metrics_list %}
                         {% if not record.check_time %}
@@ -175,7 +211,8 @@ Monitor Index
                 </div>                
                 <br>
                 <div>
-                    <h2 class="subtitle">Event logs table:</h2>
+                    <h2 class="subtitle">Event logs</h2>
+                    <h3 class="subtitleh3">Event logs table:</h2>
                     <table>
                         <tr>
                             <th><b> System name </b></th>
@@ -221,23 +258,21 @@ Monitor Index
 </div>
 <script>
     Chart.defaults.global.legend.labels.usePointStyle = true;
-    var data = {{ datapoints|safe }};
-    var dataPoints = [];
+    var data = {{ datapoints_internet_check|safe }};
     var datax = [];
     var datay = [];
-    var sys_name = '';
-    var yAxes_max = '';
+    var src_name = '';
+    var yAxes_max = 1;
     var color_list = ['#0519f3', '#008FFD', '#0645ef', '#0090d0', '#2e7fa3', '#535edd', '#8e78da'];
 //    <!--var borderColor = ['#008FFD21', '#0519f321', '#0645ef21', '#0090d021', '#2e7fa321', '#535edd21', '#8e78da21'];-->
-
+    
 
 //    console.log(data);
 
     for(var i=0; i<data.length; i++) {
         datax = [];
         datay = [];
-        sys_name = data[i][0]['fields']['system_name'];
-        yAxes_max = parseInt(data[i][0]['fields']['RAM']);
+        src_name = data[i][0]['fields']['service_name'];
 
         if (i<=color_list.length){
             backgroundColor_value = color_list[i] + '21';
@@ -253,12 +288,333 @@ Monitor Index
         for(var j=0; j<data[i].length; j++) {
         //    console.log(Object.keys(dataPoints[i][j]));
             datax.push(data[i][j]['fields']['check_time']);
-            datay.push(parseInt(data[i][j]['fields']['mem_used']));
+            datay.push(parseInt(data[i][j]['fields']['availability']));
         }
 
 //        console.log(datax, datay);
+        new Chart("Chart_internet_check_" + i, {
+                type: "line",
+                data: {
+                    labels: datax,
+                    datasets: [{
+                        label: src_name,
+                        fill: true,
+                        //lineTension: 0,
+                        backgroundColor: backgroundColor_value,
+                        borderColor: borderColor_value,
+                        data: datay
+                    },                 
+                    ]
+                },
+                options: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            fontColor: 'black',
+                            fontFamily: 'Calibri Light',
+                            fontStyle: 'italic'
+                        },
+                    },                
+                    hover: {
+                        mode: 'label',
+                        intersect: true
+                    },
+                    tooltips: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    responsive: false,
+                    maintainAspectRatio: true,
 
-        new Chart("myChart" + i, {
+                    title: {
+                        display: true,
+                        text: 'Check availability to ' + src_name + ' (IP: ' + data[i][0]['fields']['destination'] + ')',
+                        position: 'top',
+                        fontSize: 11
+                        },
+                    scales: {
+                        yAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Availability'
+                        },
+                        ticks: {
+                                //stepSize: Math.round(yAxes_max / 1000) * 100 * 2,
+                                min: 0,
+                                //max: Math.round(yAxes_max / 1000) * 1000,
+                                max: 1,
+                                autoSkip: true,
+                                maxTicksLimit: 1,
+                                beginAtZero:true,
+                                fontSize: 9
+                            }
+                        }],
+                        xAxes: [{
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Check time',
+                                //type: 'time',
+                            },
+                            ticks: {
+                                autoSkip: true,
+                                maxTicksLimit: 6,
+                                fontSize: 9
+                            }
+                        }],
+                    },
+                }     
+                });
+}
+</script>
+<script>
+    Chart.defaults.global.legend.labels.usePointStyle = true;
+    var data = {{ datapoints_service_check|safe }};
+    var datax = [];
+    var datay = [];
+    var src_name = '';
+    var yAxes_max = 1;
+    var color_list = ['#0519f3', '#008FFD', '#0645ef', '#0090d0', '#2e7fa3', '#535edd', '#8e78da'];
+//    <!--var borderColor = ['#008FFD21', '#0519f321', '#0645ef21', '#0090d021', '#2e7fa321', '#535edd21', '#8e78da21'];-->
+    
+
+//    console.log(data);
+
+    for(var i=0; i<data.length; i++) {
+        datax = [];
+        datay = [];
+        src_name = data[i][0]['fields']['service_name'];
+
+        if (i<=color_list.length){
+            backgroundColor_value = color_list[i] + '21';
+            borderColor_value = color_list[i];
+        } else {
+            backgroundColor_value = '#0519f321';
+            borderColor_value = '#0519f3';
+        }
+        
+//        console.log(sys_name);
+//        console.log(yAxes_max);
+        
+        for(var j=0; j<data[i].length; j++) {
+        //    console.log(Object.keys(dataPoints[i][j]));
+            datax.push(data[i][j]['fields']['check_time']);
+            datay.push(parseInt(data[i][j]['fields']['availability']));
+        }
+
+//        console.log(datax, datay);
+        new Chart("Chart_service_check_" + i, {
+                type: "line",
+                data: {
+                    labels: datax,
+                    datasets: [{
+                        label: src_name,
+                        fill: true,
+                        //lineTension: 0,
+                        backgroundColor: backgroundColor_value,
+                        borderColor: borderColor_value,
+                        data: datay
+                    },                 
+                    ]
+                },
+                options: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            fontColor: 'black',
+                            fontFamily: 'Calibri Light',
+                            fontStyle: 'italic'
+                        },
+                    },                
+                    hover: {
+                        mode: 'label',
+                        intersect: true
+                    },
+                    tooltips: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    responsive: false,
+                    maintainAspectRatio: true,
+
+                    title: {
+                        display: true,
+                        text: 'Check availability to ' + src_name,
+                        position: 'top',
+                        fontSize: 11
+                        },
+                    scales: {
+                        yAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Availability'
+                        },
+                        ticks: {
+                                //stepSize: Math.round(yAxes_max / 1000) * 100 * 2,
+                                min: 0,
+                                //max: Math.round(yAxes_max / 1000) * 1000,
+                                max: 1,
+                                autoSkip: true,
+                                maxTicksLimit: 1,
+                                beginAtZero:true,
+                                fontSize: 9
+                            }
+                        }],
+                        xAxes: [{
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Check time',
+                                //type: 'time',
+                            },
+                            ticks: {
+                                autoSkip: true,
+                                maxTicksLimit: 6,
+                                fontSize: 9
+                            }
+                        }],
+                    },
+                }     
+                });
+}
+</script>
+<script>
+    Chart.defaults.global.legend.labels.usePointStyle = true;
+    var data = {{ datapoints_metrics|safe }};
+    var dataPoints = [];
+    var datax = [];
+    var datay = [];
+    var sys_name = '';
+    var yAxes_max = '';
+    var color_list = ['#0519f3', '#008FFD', '#0645ef', '#0090d0', '#2e7fa3', '#535edd', '#8e78da'];
+//    <!--var borderColor = ['#008FFD21', '#0519f321', '#0645ef21', '#0090d021', '#2e7fa321', '#535edd21', '#8e78da21'];-->
+//    console.log(color_list[0].slice(0,5) + 'b1')
+
+//    console.log(data);
+
+    for(var i=0; i<data.length; i++) {
+        datax = [];
+        datay_ram = [];
+        datay_cpu_1 = [];
+        datay_cpu_5 = [];
+        datay_cpu_15 = [];
+        datay_hdd = [];
+        sys_name = data[i][0]['fields']['system_name'];
+        yAxes_cpu_max = data[i][0]['fields']['CPU_cores'];
+        yAxes_ram_max = parseInt(data[i][0]['fields']['RAM']);
+        yAxes_hdd_max_procent = 100;
+        yAxes_hdd_size = data[i][0]['fields']['HDD'];
+
+
+        if (i<=color_list.length){
+            backgroundColor_value = color_list[i] + '21';
+            borderColor_value = color_list[i];
+        } else {
+            backgroundColor_value = '#0519f321';
+            borderColor_value = '#0519f3';
+        }
+        
+//        console.log(sys_name);
+//        console.log(yAxes_max);
+        
+        for(var j=0; j<data[i].length; j++) {
+        //    console.log(Object.keys(dataPoints[i][j]));
+            datax.push(data[i][j]['fields']['check_time']);
+            datay_cpu_1.push(parseFloat(data[i][j]['fields']['cpu_load_1']));
+            datay_cpu_5.push(parseFloat(data[i][j]['fields']['cpu_load_5']));
+            datay_cpu_15.push(parseFloat(data[i][j]['fields']['cpu_load_15']));
+            datay_ram.push(parseInt(data[i][j]['fields']['mem_used']));
+            datay_hdd.push(parseInt(data[i][j]['fields']['disk_usage']));
+        }
+
+//        console.log(datax, datay);
+        new Chart("Chart_CPU_load_" + i, {
+                type: "line",
+                data: {
+                    labels: datax,
+                    datasets: [{
+                        label: 'Load average 1 min',
+                        fill: true,
+                        //lineTension: 0,
+                        backgroundColor: backgroundColor_value,
+                        borderColor: borderColor_value,
+                        data: datay_cpu_1
+                    }, {
+                        label: 'Load average 5 min',
+                            fill: true,
+                            //lineTension: 0,
+                            backgroundColor: backgroundColor_value.slice(0,5) + 'a121',
+                            borderColor: borderColor_value.slice(0,5) + 'a1',
+                            data: datay_cpu_5
+                    }, {
+                        label: 'Load average 15 min',
+                            fill: true,
+                            //lineTension: 0,
+                            backgroundColor: backgroundColor_value.slice(0,5) + '6121',
+                            borderColor: borderColor_value.slice(0,5) + '61',
+                            data: datay_cpu_15
+                        },
+                
+                    ]
+                },
+                options: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            fontColor: 'black',
+                            fontFamily: 'Calibri Light',
+                            fontStyle: 'italic'
+                        },
+                    },                
+                    hover: {
+                        mode: 'label',
+                        intersect: true
+                    },
+                    tooltips: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    responsive: false,
+                    maintainAspectRatio: true,
+
+                    title: {
+                        display: true,
+                        text: 'CPU load for ' + sys_name + ' (CPU core: ' + yAxes_cpu_max + ')',
+                        position: 'top',
+                        fontSize: 11
+                        },
+                    scales: {
+                        yAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'CPU load'
+                        },
+                        ticks: {
+                                //stepSize: Math.round(yAxes_max / 1000) * 100 * 2,
+                                min: 0,
+                                //max: Math.round(yAxes_max / 1000) * 1000,
+                                max: 2*yAxes_cpu_max,
+                                autoSkip: true,
+                                maxTicksLimit: 6,
+                                beginAtZero:true,
+                                fontSize: 9
+                            }
+                        }],
+                        xAxes: [{
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Check time',
+                                //type: 'time',
+                            },
+                            ticks: {
+                                autoSkip: true,
+                                maxTicksLimit: 6,
+                                fontSize: 9
+                            }
+                        }],
+                    },
+                }     
+                });
+
+    new Chart("Chart_Mem_usage_" + i, {
                 type: "line",
                 data: {
                     labels: datax,
@@ -268,7 +624,7 @@ Monitor Index
                         //lineTension: 0,
                         backgroundColor: backgroundColor_value,
                         borderColor: borderColor_value,
-                        data: datay
+                        data: datay_ram
                     }]
                 },
                 options: {
@@ -293,7 +649,7 @@ Monitor Index
 
                     title: {
                         display: true,
-                        text: 'Memory usage for ' + sys_name + ' (RAM: ' + yAxes_max + 'Mb)',
+                        text: 'Memory usage for ' + sys_name + ' (RAM: ' + yAxes_ram_max + 'Mb)',
                         position: 'top',
                         fontSize: 11
                         },
@@ -306,7 +662,7 @@ Monitor Index
                         ticks: {
                                 //stepSize: Math.round(yAxes_max / 1000) * 100 * 2,
                                 min: 0,
-                                max: Math.round(yAxes_max / 1000) * 1000,
+                                max: (Math.round(yAxes_ram_max / 1000) * 1000) + (Math.round(yAxes_ram_max / 1000)) * 100,
                                 autoSkip: true,
                                 maxTicksLimit: 6,
                                 beginAtZero:true,
@@ -328,7 +684,78 @@ Monitor Index
                     },
                 }     
                 });
-    }
 
+    new Chart("Chart_disk_usage_" + i, {
+        type: "line",
+        data: {
+            labels: datax,
+            datasets: [{
+                label: sys_name,
+                fill: true,
+                //lineTension: 0,
+                backgroundColor: backgroundColor_value,
+                borderColor: borderColor_value,
+                data: datay_hdd
+            }]
+        },
+        options: {
+            legend: {
+                position: 'top',
+                labels: {
+                    fontColor: 'black',
+                    fontFamily: 'Calibri Light',
+                    fontStyle: 'italic'
+                },
+            },                
+            hover: {
+                mode: 'label',
+                intersect: true
+            },
+            tooltips: {
+                mode: 'index',
+                intersect: false,
+            },
+            responsive: false,
+            maintainAspectRatio: true,
+
+            title: {
+                display: true,
+                text: 'Disk usage for ' + sys_name + ', %' + ' (HDD: ' + yAxes_hdd_size + ')',
+                position: 'top',
+                fontSize: 11
+                },
+            scales: {
+                yAxes: [{
+                scaleLabel: {
+                    display: true,
+                    labelString: 'Used, %'
+                },
+                ticks: {
+                        //stepSize: Math.round(yAxes_max / 1000) * 100 * 2,
+                        min: 0,
+                        max: yAxes_hdd_max_procent,
+                        autoSkip: true,
+                        maxTicksLimit: 6,
+                        beginAtZero:true,
+                        fontSize: 9
+                    }
+                }],
+                xAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Check time',
+                        //type: 'time',
+                    },
+                    ticks: {
+                        autoSkip: true,
+                        maxTicksLimit: 6,
+                        fontSize: 9
+                    }
+                }],
+            },
+        }     
+        });
+}
 </script>
+
 {% endblock %}
