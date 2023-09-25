@@ -18,19 +18,19 @@ def check_web_service(service_list):
                     # print(f'\nService {service_list[i].service_name} available! =)')
                     results.append(
                         {'service_id': service_list[i].id, 
-                        'check_time': datetime.datetime.strftime(datetime.datetime.now().replace(microsecond=0), '%d-%m-%Y %H:%M:%S'),
+                        'check_time': datetime.datetime.strftime(datetime.datetime.now().replace(microsecond=0), '%Y-%m-%d %H:%M:%S'),
                         'availability': True})
                 else:
                     # print(f'\nService {service_list[i].service_name} NOT available! =()')
                     results.append(
                         {'service_id': service_list[i].id, 
-                         'check_time': datetime.datetime.strftime(datetime.datetime.now().replace(microsecond=0), '%d-%m-%Y %H:%M:%S'),
+                         'check_time': datetime.datetime.strftime(datetime.datetime.now().replace(microsecond=0), '%Y-%m-%d %H:%M:%S'),
                          'availability': False})
             except requests.exceptions.ConnectionError as error:
                 # print(f'\nService {service_list[i].service_name} NOT available! =()')
                 results.append(
                         {'service_id': service_list[i].id, 
-                         'check_time': datetime.datetime.strftime(datetime.datetime.now().replace(microsecond=0), '%d-%m-%Y %H:%M:%S'),
+                         'check_time': datetime.datetime.strftime(datetime.datetime.now().replace(microsecond=0), '%Y-%m-%d %H:%M:%S'),
                          'availability': False})
 
     # print('\nresults_services_check= ', results)

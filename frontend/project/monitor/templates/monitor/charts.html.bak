@@ -16,13 +16,13 @@ Monitor Index
         <div class="container">
             <div class="header-inner">
                 <div class="header-brand">
-                    Webmonitor
+                    Webmonitor Page
                 </div>
                 <div class="header-logo">
                     <img src="{% static 'images/monitoring.gif' %}" alt="" width="100" height="40">
                 </div>
                 <nav class="header-nav">
-                    <a class="header-nav-link" href="http://192.168.1.203:8008/monitor/">Dashboard</a>
+                    <a class="header-nav-link" href="http://192.168.1.203:8008/monitor/">Webmonitor</a>
                     <a class="header-nav-link active" href="http://192.168.1.203:8008/monitor/charts">Charts</a>
                 </nav>
             </div>
@@ -33,19 +33,10 @@ Monitor Index
     <div class="container">
         <main class="content">
             <hr>
-            <p><b><-- Select time range for all charts --></b></p>
-            <form action="charts" method="GET">
-                <!-- {% csrf_token %}  -->
-                start date: {{ form.all_start_date }}
-                {{ form.all_start_time }}
-                end date: {{ form.all_end_date }}
-                {{ form.all_end_time }}
-                <button>Submit for all</button>
-            <hr>
             <div class="content-block">
                 <h1 class="title">[ INTERNET MONITOR ]</h1>
                 {% if iservices_info_list %}
-                <b>Displayed data from</b> <span style="color:rgb(17, 17, 204)">{{ im_start_datetime_object }}</span> <b>to</b>  <span style="color:rgb(17, 17, 204)">{{ im_end_datetime_object }}</span>
+                <h2 class="subtitle">Internet availability chart</h2>
                     <div class="content-subblock">
                         {% for i in datapoints_internet_check %}
                         <div>
@@ -53,25 +44,54 @@ Monitor Index
                         </div>
                         {% endfor %}
                     </div>
-                    <form id="form1" action="charts" method="GET">
-                        <!-- {% csrf_token %}  -->
-                        start date: {{ form.im_start_date }}
-                        {{ form.im_start_time }}
-                        end date: {{ form.im_end_date }}
-                        {{ form.im_end_time }}
-                        <button>Submit</button>
-                    </form>
-                    
+                <br>
+                <div>
+                    <h3 class="subtitleh3">Internet availability table (last check):</h3>
+                    <table>
+                        <tr>
+                            <th style="width:110%"><b> Service name </b></th>
+                            <th><b> Destination </b></th>
+                            <th><b> Check time </b></th>
+                            <th><b> Packet loss rate, %</b></th>
+                            <th style="width:50%"><b> RTT MIN</b></th>
+                            <th style="width:50%"><b> RTT MAX</b></th>
+                            <th style="width:60%"><b> Availability </b></th>
+                        </tr>
+                    {% for iservices, record in iservices_info_list %}
+                        {% if record.availability %}
+                        <tr style="background-color:#a3ff0070;">
+                        {% else %}
+                        <tr style="background-color:#ff180070;">
+                        {% endif %}
+                            <td>{{ iservices.service_name }} (id: {{ iservices.id }})</td>
+                            <td>{{ iservices.IPv4 }}</td>
+                            {% if not record.check_time %}
+                            <td>---</td>
+                            <td>---</td>
+                            <td>---</td>
+                            <td>---</td>
+                            <td>--- no data! ---</td>
+                            {% else %}
+                            <td>{{ record.check_time }}</td>
+                            <td>{{ record.packet_loss_rate }}</td>
+                            <td>{{ record.rtt_min }}</td>
+                            <td>{{ record.rtt_max }}</td>
+                            <td>{{ record.availability }}</td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                    </table>
+                </div>
                 {% else %}
-                    <h2 class="subtitle">No Internet services</h2>
+                <h2 class="subtitle">No Internet services</h2>
                 {% endif %}
+                <hr>
             </div>
-            <hr>
-               
+
             <div class="content-block">
                 <h1 class="title">[ SERVICE MONITOR ]</h1>
                 {% if services_info_list %}
-                <b>Displayed data from</b> <span style="color:rgb(17, 17, 204)">{{ sm_start_datetime_object }}</span> <b>to</b>  <span style="color:rgb(17, 17, 204)">{{ sm_end_datetime_object }}</span>
+                <h2 class="subtitle">Service availability chart</h2>
                 <div class="content-subblock">
                     {% for i in datapoints_service_check %}
                     <div>
@@ -79,14 +99,35 @@ Monitor Index
                     </div>
                     {% endfor %}
                 </div>
-                <form id="form2" action="charts" method="GET">
-                    <!-- {% csrf_token %}  -->
-                    start date: {{ form.sm_start_date }}
-                    {{ form.sm_start_time }}
-                    end date: {{ form.sm_end_date }}
-                    {{ form.sm_end_time }}
-                    <button>Submit</button>
-                </form>
+            <br>
+                <div>
+                    <h3 class="subtitleh3">Service availability table:</h2>
+                    <table>
+                        <tr>
+                            <th style="width:65%"><b> Service name </b></th>
+                            <th><b> URL </b></th>
+                            <th style="width:45%"><b> Check time </b></th>
+                            <th style="width:25%"><b> Status </b></th>
+                        </tr>
+                    {% for service, record in services_info_list %}
+                        {% if record.availability == True %}
+                        <tr style="background-color:#a3ff0070;">
+                        {% else %}
+                        <tr style="background-color:#ff180070;">
+                        {% endif %}
+                            <td>{{ service.service_name }} (id: {{ service.id }})</td>
+                            <td>{{ service.protocol }}://{{ service.host }}:{{ service.port }}{{ service.path }}</td>
+                            {% if not record.check_time %}
+                            <td>--- no data! ---</td>
+                            <td>--- no data! ---</td>
+                            {% else %}
+                            <td>{{ record.check_time }}</td>
+                            <td>{{ record.availability }}</td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                    </table>
+                </div>
                 {% else %}
                 <h2 class="subtitle">No Services</h3>
                 {% endif %}
@@ -96,9 +137,10 @@ Monitor Index
             <div class="content-block">
                 <h1 class="title">[ SYSTEM MONITOR ]</h1>
                 {% if systems_info_list %}
-                <b>Displayed data from</b> <span style="color:rgb(17, 17, 204)">{{ sys_start_datetime_object }}</span> <b>to</b>  <span style="color:rgb(17, 17, 204)">{{ sys_end_datetime_object }}</span>
                 <div>
-                    <h3 class="subtitle">CPU load</h3>
+                    <h2 class="subtitle">System metrics charts</h2>
+                    <h3 class="subtitleh3">CPU load:</h3>
+                    <br>
                     <div class="content-subblock">
                         {% for i in datapoints_metrics %}
                         <div>
@@ -107,7 +149,7 @@ Monitor Index
                         {% endfor %}
                     </div>
                     <br>
-                    <h3 class="subtitle">Memory usage:</h3>
+                    <h3 class="subtitleh3">Memory usage:</h3>
                     <div class="content-subblock">
                         {% for i in datapoints_metrics %}
                         <div>
@@ -116,7 +158,7 @@ Monitor Index
                         {% endfor %}
                     </div>
                     <br>
-                    <h3 class="subtitle">Disk usage:</h3>
+                    <h3 class="subtitleh3">Disk usage:</h3>
                         <div class="content-subblock">
                             {% for i in datapoints_metrics %}
                             <div>
@@ -124,23 +166,96 @@ Monitor Index
                             </div>
                             {% endfor %}
                         </div>
+                    <br>
+                    <h3 class="subtitleh3">System metrics table:</h3>
+                    <table>
+                        <tr>
+                            <th style="width:110%"><b> System name </b></th>
+                            <th style="width:65%"><b> Hostname </b></th>
+                            <th style="width:60%"><b> Check time </b></th>
+                            <th><b> Uptime </b></th>
+                            <th style="width:55%"><b> CPU load 1 min</b></th>
+                            <th style="width:55%"><b> CPU load 5 min</b></th>
+                            <th style="width:55%"><b> CPU load 15 min</b></th>
+                            <th><b> Memory used, Mb / Total RAM, Mb</b></th>
+                            <th style="width:75%"><b> Disk usage, %</b></th>
+                        </tr>
+                    {% for system, record in systems_metrics_list %}
+                        {% if not record.check_time %}
+                        <tr style="background-color:#ff180070;">
+                        {% else %}
+                        <tr style="background-color:#a3ff0070;">
+                        {% endif %}
+                            <td>{{ system.system_name }} (id: {{ system.id }})</td>
+                            <td>{{ system.hostname }}</td>
+                            {% if not record.check_time %}
+                            <td>---</td>
+                            <td>---</td>
+                            <td>---</td>
+                            <td>---</td>
+                            <td>---</td>
+                            <td>---</td>
+                            <td>---no data!---</td>
+                            {% else %}
+                            <td>{{ record.check_time }}</td>
+                            <td>{{ record.uptime }}</td>
+                            <td>{{ record.cpu_load_1 }}</td>
+                            <td>{{ record.cpu_load_5 }}</td>
+                            <td>{{ record.cpu_load_15 }}</td>
+                            <td>{{ record.mem_used }} / {{ system.RAM }}</td>
+                            <td>{{ record.disk_usage }}</td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                    </table>
                 </div>                
-                <form action="charts" method="GET">
-                    <!-- {% csrf_token %}  -->
-                    start date: {{ form.sys_start_date }}
-                    {{ form.sys_start_time }}
-                    end date: {{ form.sys_end_date }}
-                    {{ form.sys_end_time }}
-                    <button>Submit</button>
-                </form>
+                <br>
+                <div>
+                    <h2 class="subtitle">Event logs</h2>
+                    <h3 class="subtitleh3">Event logs table:</h2>
+                    <table>
+                        <tr>
+                            <th><b> System name </b></th>
+                            <th><b> Hostname </b></th>
+                            <th><b> Event time </b></th>
+                            <th style="width:300%"><b> Message </b></th>
+                            <th><b> Available actions </b></th>
+                        </tr>
+                    {% for system, record in systems_info_list %}
+                        {% if record.ignored or record.solved %}
+                            <tr style="background-color:#a3ff0070;">
+                        {% elif record.message %}
+                        <tr style="background-color:#ff180070;">
+                        {% else %}
+                        <tr style="background-color:#a3ff0070;">
+                        {% endif %}
+                            <td>{{ system.system_name }} (id: {{ system.id }})</td>
+                            <td>{{ system.hostname }}</td>
+                            {% if not record.message or record.ignored or record.solved %}
+                            <td>---</td>
+                            <td>no errors</td>
+                            <td>no action available</td>
+                            {% else %}
+                            <td>{{ record.realtime_timestamp }}</td>
+                            <td>{{ record.message }}</td>
+                            <td> <a href="solve/{{ record.id }}">Mark as solved</a><br /> or <br /><a href="ignore/{{ record.id }}">Mark as ignored</a></td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                    </table>
+                </div>
+        
+
                 {% else %}
                 <h2 class="subtitle">No Systems</h2>
                 {% endif %}
                 <hr>
             </div>
 
-</div>
 
+
+
+</div>
 <script>
     Chart.defaults.global.legend.labels.usePointStyle = true;
     var data = {{ datapoints_internet_check|safe }};
@@ -197,7 +312,7 @@ Monitor Index
                         labels: {
                             fontColor: 'black',
                             fontFamily: 'Calibri Light',
-                            fontStyle: 'italic',
+                            fontStyle: 'italic'
                         },
                     },                
                     hover: {
@@ -216,11 +331,6 @@ Monitor Index
                         text: 'Check availability to ' + src_name + ' (IP: ' + data[i][0]['fields']['destination'] + ')',
                         position: 'top',
                         fontSize: 11
-                        },
-                    elements: {
-                        point: {
-                            pointStyle: 'line'
-                            }
                         },
                     scales: {
                         yAxes: [{
@@ -256,7 +366,6 @@ Monitor Index
                 });
 }
 </script>
-
 <script>
     Chart.defaults.global.legend.labels.usePointStyle = true;
     var data = {{ datapoints_service_check|safe }};
@@ -333,11 +442,6 @@ Monitor Index
                         position: 'top',
                         fontSize: 11
                         },
-                    elements: {
-                        point: {
-                            pointStyle: 'line'
-                            }
-                        },
                     scales: {
                         yAxes: [{
                         scaleLabel: {
@@ -372,7 +476,6 @@ Monitor Index
                 });
 }
 </script>
-
 <script>
     Chart.defaults.global.legend.labels.usePointStyle = true;
     var data = {{ datapoints_metrics|safe }};
@@ -478,11 +581,6 @@ Monitor Index
                         position: 'top',
                         fontSize: 11
                         },
-                    elements: {
-                        point: {
-                            pointStyle: 'line'
-                            }
-                        },
                     scales: {
                         yAxes: [{
                         scaleLabel: {
@@ -555,11 +653,6 @@ Monitor Index
                         position: 'top',
                         fontSize: 11
                         },
-                    elements: {
-                        point: {
-                            pointStyle: 'line'
-                            }
-                        },
                     scales: {
                         yAxes: [{
                         scaleLabel: {
@@ -631,11 +724,6 @@ Monitor Index
                 position: 'top',
                 fontSize: 11
                 },
-            elements: {
-                    point: {
-                        pointStyle: 'line'
-                        }
-                    },
             scales: {
                 yAxes: [{
                 scaleLabel: {

@@ -130,7 +130,7 @@ async def get_systems_metrics(active_systems_list_of_dicts, systems_all_list, db
         for i, _ in enumerate(result_top):
             # print("result_top[i]= ", result_top[i])
             if result_top[i]:
-                result_top[i]['check_time'] = datetime.datetime.strftime(datetime.datetime.now().replace(microsecond=0), '%d-%m-%Y %H:%M:%S')
+                result_top[i]['check_time'] = datetime.datetime.strftime(datetime.datetime.now().replace(microsecond=0), '%Y-%m-%d %H:%M:%S')
                 result_top[i].pop('wa')
                 result_top[i].pop('mem_total')
                 result_top[i].pop('mem_free')
@@ -168,7 +168,7 @@ async def get_system_journal(active_systems_list_of_dicts,
                              db,
                              check_interval
                              ):
-    period_get_journal_for_query = 1024
+    period_get_journal_for_query = 4096
     # period_get_journal_for_query = round(check_interval / 3600 , 1) + 1
     # print("\nperiod_get_journal_for_query= ", period_get_journal_for_query)
     while True:
@@ -214,7 +214,7 @@ async def get_system_journal(active_systems_list_of_dicts,
                 else:
                     result_journal_db[i]['pid'] = None
                 if result_journal[i].get('__REALTIME_TIMESTAMP', None):
-                    result_journal_db[i]['realtime_timestamp'] = datetime.datetime.utcfromtimestamp(int(str(result_journal[i].pop('__REALTIME_TIMESTAMP'))[:10])).strftime('%d-%m-%Y %H:%M:%S')
+                    result_journal_db[i]['realtime_timestamp'] = datetime.datetime.utcfromtimestamp(int(str(result_journal[i].pop('__REALTIME_TIMESTAMP'))[:10])).strftime('%Y-%m-%d %H:%M:%S')
                 else:
                     result_journal_db[i]['realtime_timestamp'] = None
                 if result_journal[i].get('MESSAGE', None):
