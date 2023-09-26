@@ -26,10 +26,10 @@ def main(iservices_all_list,
         active_systems_list_of_dicts,
         services_result_list, 
         db, 
-        check_interval_internet=30,
-        check_interval_serivces=30,
-        check_interval_metrics=30,
-        check_interval_journals=30
+        check_interval_internet=180,
+        check_interval_serivces=600,
+        check_interval_metrics=3600,
+        check_interval_journals=900
         ):
     # print("systems_all_list= ", systems_all_list)
     loop = asyncio.get_event_loop()
@@ -168,8 +168,8 @@ async def get_system_journal(active_systems_list_of_dicts,
                              db,
                              check_interval
                              ):
-    period_get_journal_for_query = 4096
-    # period_get_journal_for_query = round(check_interval / 3600 , 1) + 1
+    # period_get_journal_for_query = 4096
+    period_get_journal_for_query = round(check_interval / 3600 , 1) + 1
     # print("\nperiod_get_journal_for_query= ", period_get_journal_for_query)
     while True:
         print("(4) Doing the get_system_journal")
@@ -381,10 +381,10 @@ DB_PATH: /webmonitor_backend/DB/monitor_db.sqlite3
 SYSTEMS_FILE: /webmonitor_backend/config/systems.yaml
 SERVICES_FILE: /webmonitor_backend/config/services.yaml
 INTERNET_SERVICES_FILE: /webmonitor_backend/config/internet_services.yaml
-CHECK_INTERVAL_INTERNET: 5
-CHECK_INTERVAL_SERVICES: 15
-CHECK_INTERVAL_METRICS: 25
-CHECK_INTERVAL_JOURNALS: 35'''
+CHECK_INTERVAL_INTERNET: 180
+CHECK_INTERVAL_SERVICES: 600
+CHECK_INTERVAL_METRICS: 3600
+CHECK_INTERVAL_JOURNALS: 900'''
         with open(r'/webmonitor_backend/config/settings.yaml', 'w') as f:
             f.write(settings)
         with open(r'/webmonitor_backend/config/settings.yaml', 'r') as f:
@@ -392,11 +392,11 @@ CHECK_INTERVAL_JOURNALS: 35'''
 
     if check_interval_internet:
         settings_dict['CHECK_INTERVAL_INTERNET'] = check_interval_internet
-    elif check_interval_services:
+    if check_interval_services:
         settings_dict['CHECK_INTERVAL_SERVICES'] = check_interval_services
-    elif check_interval_metrics:
+    if check_interval_metrics:
         settings_dict['CHECK_INTERVAL_METRICS'] = check_interval_metrics
-    elif check_interval_journals:
+    if check_interval_journals:
         settings_dict['CHECK_INTERVAL_JOURNALS'] = check_interval_journals
     
     return settings_dict

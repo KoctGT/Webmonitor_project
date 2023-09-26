@@ -41,6 +41,7 @@ Monitor Index
                 end date: {{ form.all_end_date }}
                 {{ form.all_end_time }}
                 <button>Submit for all</button>
+            </form>
             <hr>
             <div class="content-block">
                 <h1 class="title">[ INTERNET MONITOR ]</h1>
@@ -53,7 +54,7 @@ Monitor Index
                         </div>
                         {% endfor %}
                     </div>
-                    <form id="form1" action="charts" method="GET">
+                    <form action="charts" method="GET">
                         <!-- {% csrf_token %}  -->
                         start date: {{ form.im_start_date }}
                         {{ form.im_start_time }}
@@ -79,7 +80,7 @@ Monitor Index
                     </div>
                     {% endfor %}
                 </div>
-                <form id="form2" action="charts" method="GET">
+                <form action="charts" method="GET">
                     <!-- {% csrf_token %}  -->
                     start date: {{ form.sm_start_date }}
                     {{ form.sm_start_time }}

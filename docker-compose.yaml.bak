@@ -27,8 +27,8 @@ services:
     environment:
       - TZ=Europe/Moscow
     volumes:
-#      - /opt/webmonitor:/webmonitor_frontend
-      - /opt/webmonitor/DB:/webmonitor_frontend/DB
+      - /opt/webmonitor:/webmonitor_frontend
+#      - /opt/webmonitor/DB:/webmonitor_frontend/DB
       - /etc/localtime:/etc/localtime:ro
     ports:
       - 8008:8000

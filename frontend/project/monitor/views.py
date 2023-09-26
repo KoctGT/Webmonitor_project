@@ -201,6 +201,8 @@ def charts(request: HttpRequest):
     start_date_default= (datetime.now() - relativedelta(months=1)).replace(microsecond=0).strftime('%Y-%m-%d')
     
     if request.GET.get("all_start_date") and request.GET.get("all_end_date"):
+        print('Selected All Request')
+        print('\nrequest.GET.get("all_end_date"): ', request.GET.get("all_end_date"))
         all_start_date = request.GET.get("all_start_date", start_date_default)
         all_end_date = request.GET.get("all_end_date", datetime.now().replace(microsecond=0).strftime('%Y-%m-%d'))
         all_start_time = request.GET.get("all_start_time", "00:00:00")
@@ -212,6 +214,7 @@ def charts(request: HttpRequest):
         im_start_datetime_object = sm_start_datetime_object = sys_start_datetime_object = all_start_datetime_object
         im_end_datetime_object = sm_end_datetime_object = sys_end_datetime_object = all_end_datetime_object
     else:
+        print('Selected Single Request')
         im_start_date = request.GET.get("im_start_date", start_date_default)
         im_end_date = request.GET.get("im_end_date", datetime.now().replace(microsecond=0).strftime('%Y-%m-%d'))
         im_start_time = request.GET.get("im_start_time", "00:00:00")
