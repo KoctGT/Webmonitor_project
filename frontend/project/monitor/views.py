@@ -76,8 +76,8 @@ def monitor_index(request: HttpRequest):
     # month_now = datetime.strftime(datetime.now().replace(microsecond=0), '%Y-%m-%d %H:%M:%S')
     date_before_month = datetime.now() - relativedelta(months=1)
     date_before_week = datetime.now() - relativedelta(weeks=1)
-    print('Today: ',datetime.now().replace(microsecond=0).strftime('%Y-%m-%d %H:%M:%S'))
-    print('After Month:', date_before_month.replace(microsecond=0).strftime('%Y-%m-%d %H:%M:%S'))
+    # print('Today: ',datetime.now().replace(microsecond=0).strftime('%Y-%m-%d %H:%M:%S'))
+    # print('After Month:', date_before_month.replace(microsecond=0).strftime('%Y-%m-%d %H:%M:%S'))
     # print('\nmonth_now: ', month_now, '\n')
     # Get active systems
     # systems_active_qset = Systems.objects.all().filter(enabled=1)
@@ -176,8 +176,8 @@ def ignore(request: HttpRequest, id):
   return HttpResponseRedirect(reverse('monitor:index'))
 
 def setdate(request: HttpRequest, imstart, imstop):
-  print('\nstart_date= ', imstart)
-  print('\nstop_date= ', imstop)
+  # print('\nstart_date= ', imstart)
+  # print('\nstop_date= ', imstop)
   # SystemsLogs.objects.filter(id=id).update(ignored=True)
   return HttpResponseRedirect(reverse('monitor:charts'))
 
@@ -201,8 +201,8 @@ def charts(request: HttpRequest):
     start_date_default= (datetime.now() - relativedelta(months=1)).replace(microsecond=0).strftime('%Y-%m-%d')
     
     if request.GET.get("all_start_date") and request.GET.get("all_end_date"):
-        print('Selected All Request')
-        print('\nrequest.GET.get("all_end_date"): ', request.GET.get("all_end_date"))
+        # print('Selected All Request')
+        # print('\nrequest.GET.get("all_end_date"): ', request.GET.get("all_end_date"))
         all_start_date = request.GET.get("all_start_date", start_date_default)
         all_end_date = request.GET.get("all_end_date", datetime.now().replace(microsecond=0).strftime('%Y-%m-%d'))
         all_start_time = request.GET.get("all_start_time", "00:00:00")
@@ -214,7 +214,7 @@ def charts(request: HttpRequest):
         im_start_datetime_object = sm_start_datetime_object = sys_start_datetime_object = all_start_datetime_object
         im_end_datetime_object = sm_end_datetime_object = sys_end_datetime_object = all_end_datetime_object
     else:
-        print('Selected Single Request')
+        # print('Selected Single Request')
         im_start_date = request.GET.get("im_start_date", start_date_default)
         im_end_date = request.GET.get("im_end_date", datetime.now().replace(microsecond=0).strftime('%Y-%m-%d'))
         im_start_time = request.GET.get("im_start_time", "00:00:00")
@@ -222,12 +222,12 @@ def charts(request: HttpRequest):
         im_start_datetime = im_start_date + " " + im_start_time
         im_end_datetime = im_end_date + " " + im_end_time
 
-        print("\nim_start_date", im_start_date)
-        print("\nim_end_date", im_end_date)
-        print("\nim_start_time: ", im_start_time)
-        print("\nim_end_time: ", im_end_time)
-        print("\nim_start_datetime: ", im_start_datetime)
-        print("\nim_end_datetime: ", im_end_datetime)
+        # print("\nim_start_date", im_start_date)
+        # print("\nim_end_date", im_end_date)
+        # print("\nim_start_time: ", im_start_time)
+        # print("\nim_end_time: ", im_end_time)
+        # print("\nim_start_datetime: ", im_start_datetime)
+        # print("\nim_end_datetime: ", im_end_datetime)
         im_start_datetime_object = datetime.strptime(im_start_datetime, '%Y-%m-%d %H:%M:%S')
         im_end_datetime_object = datetime.strptime(im_end_datetime, '%Y-%m-%d %H:%M:%S')
 
@@ -292,8 +292,8 @@ def charts(request: HttpRequest):
     # month_now = datetime.strftime(datetime.now().replace(microsecond=0), '%Y-%m-%d %H:%M:%S')
     date_before_month = datetime.now() - relativedelta(months=1)
     date_before_week = datetime.now() - relativedelta(weeks=1)
-    print('Today: ',datetime.now().replace(microsecond=0).strftime('%Y-%m-%d %H:%M:%S'))
-    print('After Month:', date_before_month.replace(microsecond=0).strftime('%Y-%m-%d %H:%M:%S'))
+    # print('Today: ',datetime.now().replace(microsecond=0).strftime('%Y-%m-%d %H:%M:%S'))
+    # print('After Month:', date_before_month.replace(microsecond=0).strftime('%Y-%m-%d %H:%M:%S'))
     # print('\nmonth_now: ', month_now, '\n')
     # print("\nsystems_active_qset= ", systems_active_qset, "\n")
     

@@ -89,7 +89,7 @@ def _sync_systems_with_DB(db, systems_file, force_init):
             prepared_dict=False, 
             limit=len(lsb_upd_list),
             command='lsb_release -a',
-            regex=re.compile(r'.*Distributor ID:\W+(?P<distributor_id>\w+.+)\sDescription:\W+(?P<description>\w+.+)\sRelease:\W+(?P<release>\w+.+)\sCodename:\W+(?P<codename>\w+)\s', re.MULTILINE)
+            regex=re.compile(r'.*Distributor ID:\W+(?P<distributor_id>\w+.+)\sDescription:\W+(?P<description>\w+.+)\sRelease:\W+(?P<release>\w+.+)\sCodename:\W+(?P<codename>\w+)', re.MULTILINE)
             )
             # print("result_lsb_release= ", result_lsb_release)
         if not force_init:
@@ -106,7 +106,7 @@ def _sync_systems_with_DB(db, systems_file, force_init):
                 prepared_dict=False, 
                 limit=len(top_upd_list),
                 command='top -n1',
-                regex=re.compile(r'.+top \D+(?P<time>\S+) up\D+(?P<up>\S+\s\S+\s+\d+.\d+).+average:\s(?P<average_1>\d.\d+)\S\s(?P<average_5>\d+.\d+)\S\s(?P<average_15>\d+.\d+).+(?P<wa>\d+\.\d+).+wa,.+MiB Mem :...\s(?P<mem_total>\d+.\d+).+total...\s+(?P<mem_free>\d+.\d+).+free\S+\s+(?P<mem_used>\d+.\d+).+used\S+\s+(?P<mem_buff>\d+.\d+).+Swap:...\s(?P<swap_total>\d+.\d+).+total\S+\s+(?P<swap_free>\d+.\d+).+free\S+\s+(?P<swap_used>\d+.\d+).+used\S+\s+(?P<swap_avail>\d+.\d+)', re.MULTILINE)
+                regex=re.compile(r'.+top \D+(?P<check_time>\S+) up\D+(?P<uptime>\S+\s\S+\s+\d+.+),\s\s\d+.+average:\s(?P<cpu_load_1>\d.\d+)\S\s(?P<cpu_load_5>\d+.\d+)\S\s(?P<cpu_load_15>\d+.\d+).+(?P<wa>\d+\.\d+).+wa,.+MiB Mem :.?.?\s*(?P<mem_total>\d+.\d+).+total,.\s*(?P<mem_free>\d+.\d+).?.?free,.?.?\s*(?P<mem_used>\d+.\d+).+used,.?.?\s*(?P<mem_buff>\d+.\d+).*MiB Swap:.?.?\s*(?P<swap_total>\d+.\d+).+total,.?.?\s*(?P<swap_free>\d+.\d+).+free,.?.?\s*(?P<swap_used>\d+.\d+).+used..?.?\s*(?P<swap_avail>\d+.\d+)', re.MULTILINE)
                 )
             # print("\n\nresult_top= ", result_top)
         if not force_init:
@@ -140,7 +140,8 @@ def _sync_systems_with_DB(db, systems_file, force_init):
                 prepared_dict=False, 
                 limit=len(HDD_upd_list),
                 command='df -h',
-                regex=re.compile(r'.+(?P<hdd_dev>\/dev\/\w+)\s+(?P<size>\d+\.?\d+\w)\s+(?P<used>\d+\.?\d+\w)\s+(?P<avail>\d+\.?\d+\w)\s+(?P<use_percent>\d+\.?\d+%)\s\/', re.MULTILINE)
+                # regex=re.compile(r'.+(?P<hdd_dev>\/dev\/\w+)\s+(?P<size>\d+\.?\d+\w)\s+(?P<used>\d+\.?\d+\w)\s+(?P<avail>\d+\.?\d+\w)\s+(?P<use_percent>\d+\.?\d+%)\s\/', re.MULTILINE)
+                regex=re.compile(r'.+(?P<hdd_dev>\/dev\/mmc\w+)\s+(?P<size>\d+\.?\d+\w)\s+(?P<used>\d+\.?\d+\w)\s+(?P<avail>\d+\.?\d+\w)\s+(?P<use_percent>\d+\.?\d+%)\s\/', re.MULTILINE)
                 )
             # print("\n\nresult_hdd= ", result_hdd)
         if not force_init:
@@ -202,7 +203,7 @@ def _sync_systems_with_DB(db, systems_file, force_init):
         for i in range(len(active_systems_list_of_dicts)):
             active_systems_list_of_dicts[i].pop('empty_fields')
 
-        # print("final active_systems_list_of_dicts= ", active_systems_list_of_dicts)
+        # print("\nfinal active_systems_list_of_dicts= ", active_systems_list_of_dicts)
         
         db_query.update_data_in_table(
                         db=db,

@@ -103,10 +103,11 @@ async def check_service_availability(services_result_list,
             await asyncio.sleep(check_interval)
 
 async def get_systems_metrics(active_systems_list_of_dicts, systems_all_list, db, check_interval):
-    regex_top = re.compile(r'.+top \D+(?P<check_time>\S+) up\D+(?P<uptime>\S+\s\S+\s+\d+.+),\s\s\d+.+average:\s(?P<cpu_load_1>\d.\d+)\S\s(?P<cpu_load_5>\d+.\d+)\S\s(?P<cpu_load_15>\d+.\d+).+(?P<wa>\d+\.\d+).+wa,.+MiB Mem :...\s(?P<mem_total>\d+.\d+).+total...\s+(?P<mem_free>\d+.\d+).+free\S+\s+(?P<mem_used>\d+.\d+).+used\S+\s+(?P<mem_buff>\d+.\d+).+Swap:...\s(?P<swap_total>\d+.\d+).+total\S+\s+(?P<swap_free>\d+.\d+).+free\S+\s+(?P<swap_used>\d+.\d+).+used\S+\s+(?P<swap_avail>\d+.\d+)', re.MULTILINE)
+    regex_top = re.compile(r'.+top \D+(?P<check_time>\S+) up\D+(?P<uptime>\S+\s\S+\s+\d+.+),\s\s\d+.+average:\s(?P<cpu_load_1>\d.\d+)\S\s(?P<cpu_load_5>\d+.\d+)\S\s(?P<cpu_load_15>\d+.\d+).+(?P<wa>\d+\.\d+).+wa,.+MiB Mem :.?.?\s*(?P<mem_total>\d+.\d+).+total,.\s*(?P<mem_free>\d+.\d+).?.?free,.?.?\s*(?P<mem_used>\d+.\d+).+used,.?.?\s*(?P<mem_buff>\d+.\d+).*MiB Swap:.?.?\s*(?P<swap_total>\d+.\d+).+total,.?.?\s*(?P<swap_free>\d+.\d+).+free,.?.?\s*(?P<swap_used>\d+.\d+).+used..?.?\s*(?P<swap_avail>\d+.\d+)', re.MULTILINE)
+    # regex_top = re.compile(r'.+top \D+(?P<check_time>\S+) up\D+(?P<uptime>\S+\s\S+\s+\d+.+),\s\s\d+.+average:\s(?P<cpu_load_1>\d.\d+)\S\s(?P<cpu_load_5>\d+.\d+)\S\s(?P<cpu_load_15>\d+.\d+).+(?P<wa>\d+\.\d+).+wa,.+MiB Mem :...\s(?P<mem_total>\d+.\d+).+total...\s+(?P<mem_free>\d+.\d+).+free\S+\s+(?P<mem_used>\d+.\d+).+used\S+\s+(?P<mem_buff>\d+.\d+).+Swap:...\s(?P<swap_total>\d+.\d+).+total\S+\s+(?P<swap_free>\d+.\d+).+free\S+\s+(?P<swap_used>\d+.\d+).+used\S+\s+(?P<swap_avail>\d+.\d+)', re.MULTILINE)
     # regex_top = re.compile(r'.+top \D+(?P<check_time>\S+) up\D+(?P<uptime>\S+\s\S+\s+\d+.\d+).+average:\s(?P<cpu_load_1>\d.\d+)\S\s(?P<cpu_load_5>\d+.\d+)\S\s(?P<cpu_load_15>\d+.\d+).+(?P<wa>\d+\.\d+).+wa,.+MiB Mem :...\s(?P<mem_total>\d+.\d+).+total...\s+(?P<mem_free>\d+.\d+).+free\S+\s+(?P<mem_used>\d+.\d+).+used\S+\s+(?P<mem_buff>\d+.\d+).+Swap:...\s(?P<swap_total>\d+.\d+).+total\S+\s+(?P<swap_free>\d+.\d+).+free\S+\s+(?P<swap_used>\d+.\d+).+used\S+\s+(?P<swap_avail>\d+.\d+)', re.MULTILINE)
     # regex_df =re.compile(r'.+(?P<hdd_dev>\/dev\/\w+)\s+(?P<size>\d+\w)\s+(?P<used>\d+\w)\s+(?P<avail>\d+\w)\s+(?P<use_percent>\d+%)\s\/', re.MULTILINE)
-    regex_df =re.compile(r'.+(?P<hdd_dev>\/dev\/\w+)\s+(?P<size>\d+\.?\d+\w)\s+(?P<used>\d+\.?\d+\w)\s+(?P<avail>\d+\.?\d+\w)\s+(?P<use_percent>\d+\.?\d+%)\s\/', re.MULTILINE)
+    regex_df =re.compile(r'.+(?P<hdd_dev>\/dev\/mmc\w+)\s+(?P<size>\d+\.?\d+\w)\s+(?P<used>\d+\.?\d+\w)\s+(?P<avail>\d+\.?\d+\w)\s+(?P<use_percent>\d+\.?\d+%)\s\/', re.MULTILINE)
     while True:
         print("(3) Doing the get_systems_metrics")
         # print("\nactive_systems_list_of_dicts= ", active_systems_list_of_dicts)
@@ -290,10 +291,10 @@ async def get_system_journal(active_systems_list_of_dicts,
 def check_config_files(systems_file, services_file, internet_services_file):
     if not os.path.exists(systems_file):
         with open(systems_file, 'w') as f:
-            f.write('''- system_name: OPIZ2
+            f.write('''- system_name: orangepizero2
   device_type: linux
-  host: 192.168.1.203
-  username: python
+  host: 192.168.1.201
+  username: root
   key_file: /ssh_key/id_rsa
   timeout: 5
   enabled: 1
@@ -303,7 +304,7 @@ def check_config_files(systems_file, services_file, internet_services_file):
   username: python
   key_file: /ssh_key/id_rsa
   timeout: 5
-  enabled: 1
+  enabled: 0
 '''
             )
     if not os.path.exists(services_file):
@@ -323,7 +324,7 @@ def check_config_files(systems_file, services_file, internet_services_file):
   path: /admin/
   correct_http_response_code: 200
   correct_http_response: <title>Pi-hole - orangepizero2</title>
-  enabled: 0
+  enabled: 1
 - service_name: Zigbee2MQTT
   protocol: http
   host: 192.168.1.201
@@ -331,7 +332,7 @@ def check_config_files(systems_file, services_file, internet_services_file):
   path: ''
   correct_http_response_code: 200
   correct_http_response: <title>Zigbee2MQTT</title>
-  enabled: 0
+  enabled: 1
 - service_name: mosquitto
   protocol: http
   host: 192.168.1.201
@@ -339,7 +340,7 @@ def check_config_files(systems_file, services_file, internet_services_file):
   path: ''
   correct_http_response_code: 200
   correct_http_response: 
-  enabled: 0
+  enabled: 1
 - service_name: lipsum.com
   protocol: https
   host: en.lipsum.com
@@ -347,7 +348,7 @@ def check_config_files(systems_file, services_file, internet_services_file):
   path: /feed/html
   correct_http_response_code: 200
   correct_http_response: <title>Lorem Ipsum - All the facts - Lipsum generator</title>
-  enabled: 1'''
+  enabled: 0'''
             )
     if not os.path.exists(internet_services_file):
         with open(internet_services_file, 'w') as f:
@@ -357,10 +358,10 @@ def check_config_files(systems_file, services_file, internet_services_file):
 - service_name: yandex_dns
   IPv4: 77.88.8.8
   enabled: 1
-- service_name: not_found_srv
+- service_name: test_server
   IPv4: 192.168.1.249
-  enabled: 1
-- service_name: new_test_srv2
+  enabled: 0
+- service_name: test_server_2
   IPv4: 169.172.127.10
   enabled: 0'''
             )
@@ -418,7 +419,7 @@ if __name__ == "__main__":
 
     # Check DB exist
     while True:
-        time.sleep(5) # Waiting for the database to be created by the frontend
+        time.sleep(30) # Waiting for the database to be created by the frontend
         db_exists = os.path.exists(settings_dict['DB_PATH'])
         if db_exists:
             break

@@ -43,8 +43,8 @@ def send_commands_to_devices(devices, *,
                         result_list.append({})
                 else:
                     # print("\njfuture= ", " ".join(future.result()[:result_length].splitlines()))
-                    # with open('output_future', 'a') as f:
-                    #    f.write(" ".join(future.result()[:result_length].splitlines()))
+                    # with open('/webmonitor_backend/config/output_future', 'a') as f:
+                       # f.write(" ".join(future.result()[:result_length].splitlines()))
                     match = regex.search(" ".join(future.result()[:result_length].splitlines()))
                     if match:
                         # print('\nmatch.groupdict()= ', match.groupdict())
