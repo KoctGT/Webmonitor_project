@@ -21,6 +21,8 @@ def ping_ip_addresses(ip_list, iservices_list, limit=3):
         response_dict = parser.parse(dedent(future.result()[1])).as_dict()
         response_dict['check_time'] = datetime.datetime.strftime(datetime.datetime.now().replace(microsecond=0), '%Y-%m-%d %H:%M:%S')
         response_dict['availability'] = future.result()[0]
+        response_dict['packet_loss_rate'] = round(response_dict['packet_loss_rate'], 3)
+        
         for service in iservices_list:
             if response_dict['destination'] in service:
                 response_dict['iservice_id'] = service.id

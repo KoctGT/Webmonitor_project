@@ -4,8 +4,8 @@ from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
 
 import json
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
+from datetime import datetime, timedelta
+# from dateutil.relativedelta import timedelta
 from django.core import serializers
 # from itertools import zip_longest
 from collections import namedtuple
@@ -74,8 +74,11 @@ def monitor_index(request: HttpRequest):
     datapoints_internet_check_query_set_list = []
     
     # month_now = datetime.strftime(datetime.now().replace(microsecond=0), '%Y-%m-%d %H:%M:%S')
-    date_before_month = datetime.now() - relativedelta(months=1)
-    date_before_week = datetime.now() - relativedelta(weeks=1)
+    # date_before_month = datetime.now() - relativedelta(months=1)
+    # date_before_week = datetime.now() - relativedelta(weeks=1)
+    # date_last_3_days = datetime.now() - timedelta(days=3)
+    date_last_day = datetime.now() - timedelta(days=1)
+    date_dashboard = date_last_day
     # print('Today: ',datetime.now().replace(microsecond=0).strftime('%Y-%m-%d %H:%M:%S'))
     # print('After Month:', date_before_month.replace(microsecond=0).strftime('%Y-%m-%d %H:%M:%S'))
     # print('\nmonth_now: ', month_now, '\n')
@@ -85,7 +88,7 @@ def monitor_index(request: HttpRequest):
     
     # Get all internet check events
     for isrc_item in iservices:
-        datapoints_internet_check_query_set_list.append(InternetAvailability.objects.all().filter(iservice=isrc_item.id, check_time__gte=date_before_month).order_by('-id')[::-1])
+        datapoints_internet_check_query_set_list.append(InternetAvailability.objects.all().filter(iservice=isrc_item.id, check_time__gte=date_dashboard).order_by('-id')[::-1])
         # datapoints_internet_check_query_set_list.append(InternetAvailability.objects.all().filter(iservice=isrc_item.id, check_time__gte=date_before_month).order_by('-id')[:100][::-1])
 
     # Prepare internet check events for charts
@@ -111,7 +114,7 @@ def monitor_index(request: HttpRequest):
 
     # Get all systems metrics
     for sys_item in systems:
-        datapoints_metrics_query_set_list.append(SystemsMetrics.objects.all().filter(system=sys_item.id, check_time__gte=date_before_month).order_by('-id')[::-1])
+        datapoints_metrics_query_set_list.append(SystemsMetrics.objects.all().filter(system=sys_item.id, check_time__gte=date_dashboard).order_by('-id')[::-1])
         # datapoints_metrics_query_set_list.append(SystemsMetrics.objects.all().filter(system=sys_item.id).order_by('-id')[:10][::-1])
     # print("\ndatapoint_query_set_list= ", datapoint_query_set_list[0], "\n")
 
@@ -136,7 +139,7 @@ def monitor_index(request: HttpRequest):
 
     # Get all service availability check events
     for src_item in services:
-        datapoints_service_check_query_set_list.append(ServiceAvailability.objects.all().filter(service=src_item.id, check_time__gte=date_before_month).order_by('-id')[::-1])
+        datapoints_service_check_query_set_list.append(ServiceAvailability.objects.all().filter(service=src_item.id, check_time__gte=date_dashboard).order_by('-id')[::-1])
         # datapoints_service_check_query_set_list.append(ServiceAvailability.objects.all().filter(service=src_item.id,).order_by('-id')[:10][::-1])
 
     # Prepare internet check events for charts
@@ -198,7 +201,8 @@ def charts(request: HttpRequest):
             end_date = form.cleaned_data["end_date"]
             print("\nstart_date", start_date)
             print("\nend_date", end_date)'''
-    start_date_default= (datetime.now() - relativedelta(months=1)).replace(microsecond=0).strftime('%Y-%m-%d')
+    date_last_3_days = datetime.now() - timedelta(days=3)
+    start_date_default = (date_last_3_days).replace(microsecond=0).strftime('%Y-%m-%d')
     
     if request.GET.get("all_start_date") and request.GET.get("all_end_date"):
         # print('Selected All Request')
@@ -290,8 +294,8 @@ def charts(request: HttpRequest):
     datapoints_internet_check_query_set_list = []
     
     # month_now = datetime.strftime(datetime.now().replace(microsecond=0), '%Y-%m-%d %H:%M:%S')
-    date_before_month = datetime.now() - relativedelta(months=1)
-    date_before_week = datetime.now() - relativedelta(weeks=1)
+    # date_before_month = datetime.now() - timedelta(months=1)
+    # date_before_week = datetime.now() - timedelta(weeks=1)
     # print('Today: ',datetime.now().replace(microsecond=0).strftime('%Y-%m-%d %H:%M:%S'))
     # print('After Month:', date_before_month.replace(microsecond=0).strftime('%Y-%m-%d %H:%M:%S'))
     # print('\nmonth_now: ', month_now, '\n')
