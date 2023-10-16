@@ -34,7 +34,7 @@ class SystemsMetrics(models.Model):
     cpu_load_1 = models.DecimalField(max_digits=4, decimal_places=2, null=True)
     cpu_load_5 = models.DecimalField(max_digits=4, decimal_places=2, null=True)
     cpu_load_15 = models.DecimalField(max_digits=4, decimal_places=2, null=True)
-    mem_used = models.DecimalField(max_digits=6, decimal_places=2, null=True) # top
+    mem_used = models.DecimalField(max_digits=8, decimal_places=2, null=True) # top
     disk_usage = models.DecimalField(max_digits=4, decimal_places=1, null=True) # df -h
 
 class Services(models.Model):
@@ -65,13 +65,13 @@ class InternetAvailability(models.Model):
     packet_transmit = models.IntegerField()
     packet_receive = models.IntegerField()
     packet_loss_count = models.IntegerField()
-    packet_loss_rate = models.DecimalField(max_digits=6, decimal_places=3)
-    rtt_min = models.DecimalField(max_digits=6, decimal_places=3, null=True)
-    rtt_avg = models.DecimalField(max_digits=6, decimal_places=3, null=True)
-    rtt_max = models.DecimalField(max_digits=6, decimal_places=3, null=True)
-    rtt_mdev = models.DecimalField(max_digits=6, decimal_places=3, null=True)
+    packet_loss_rate = models.DecimalField(max_digits=8, decimal_places=3)
+    rtt_min = models.DecimalField(max_digits=8, decimal_places=3, null=True)
+    rtt_avg = models.DecimalField(max_digits=8, decimal_places=3, null=True)
+    rtt_max = models.DecimalField(max_digits=8, decimal_places=3, null=True)
+    rtt_mdev = models.DecimalField(max_digits=8, decimal_places=3, null=True)
     packet_duplicate_count = models.IntegerField(null=True)
-    packet_duplicate_rate = models.DecimalField(max_digits=6, decimal_places=3, null=True)
+    packet_duplicate_rate = models.DecimalField(max_digits=8, decimal_places=3, null=True)
 
 
 
